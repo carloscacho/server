@@ -25,4 +25,10 @@ export class UsuarioService {
   async delete(id_usuario: number) {
     return this.prisma.usuario.delete({ where: { id_usuario } });
   }
+
+  async findByEmail(email: string) {
+    return this.prisma.usuario.findUnique({
+      where: { email },
+    });
+  }
 }
