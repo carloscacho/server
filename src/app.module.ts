@@ -17,6 +17,7 @@ import { TurnoModule } from './turno/turno.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AuthModule } from './auth/auth.module';
 import { AdminMiddleware } from './common/middlewares/admin.middleware';
+import { AdminAuxMiddleware } from './common/middlewares/admin-aux.middleware';
 
 @Module({
   imports: [
@@ -53,6 +54,8 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AdminMiddleware) // Aplica o middleware
-      .forRoutes('evento'); // Protege as rotas do módulo `evento`
+      .forRoutes('evento') // Protege as rotas do módulo `evento`
+      .apply(AdminAuxMiddleware) // Aplica o middleware auxiliar
+      .forRoutes('certificado'); // Protege as rotas do módulo `certificado`
   }
 }

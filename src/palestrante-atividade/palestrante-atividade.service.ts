@@ -14,15 +14,15 @@ export class PalestranteAtividadeService {
     return this.prisma.palestrante_atividade.findMany();
   }
 
-  async findById(fk_palestrante: number, fk_atividade: number) {
+  async findById(fk_atividade: number, fk_palestrante: number) {
     return this.prisma.palestrante_atividade.findUnique({
-      where: { fk_palestrante_fk_atividade: { fk_palestrante, fk_atividade } },
+      where: { fk_atividade_fk_palestrante: { fk_atividade, fk_palestrante } },
     });
   }
 
-  async delete(fk_palestrante: number, fk_atividade: number) {
+  async delete(fk_atividade: number, fk_palestrante: number) {
     return this.prisma.palestrante_atividade.delete({
-      where: { fk_palestrante_fk_atividade: { fk_palestrante, fk_atividade } },
+      where: { fk_atividade_fk_palestrante: { fk_atividade, fk_palestrante } },
     });
   }
 }

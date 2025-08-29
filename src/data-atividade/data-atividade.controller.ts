@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { DataAtividadeService } from './data-atividade.service';
 import { DataAtividadeDTO } from './dto/data-atividade.dto';
 

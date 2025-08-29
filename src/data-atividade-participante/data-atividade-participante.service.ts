@@ -7,7 +7,12 @@ export class DataAtividadeParticipanteService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: DataAtividadeParticipanteDTO) {
-    return this.prisma.data_atividade_participante.create({ data });
+    // Convert 'presenca' from boolean to number if defined
+    const prismaData = {
+      ...data,
+      presenca: typeof data.presenca === 'boolean' ? (data.presenca ? 1 : 0) : data.presenca,
+    };
+    return this.prisma.data_atividade_participante.create({ data: prismaData });
   }
 
   async findAll() {
@@ -16,20 +21,44 @@ export class DataAtividadeParticipanteService {
 
   async findById(fk_data_atividade: number, fk_participante: number) {
     return this.prisma.data_atividade_participante.findUnique({
-      where: { fk_data_atividade_fk_participante: { fk_data_atividade, fk_participante } },
+      where: {
+        fk_data_atividade_fk_participante: {
+          fk_data_atividade,
+          fk_participante,
+        },
+      },
     });
   }
 
-  async update(fk_data_atividade: number, fk_participante: number, data: DataAtividadeParticipanteDTO) {
+  async update(
+    fk_data_atividade: number,
+    fk_participante: number,
+    data: DataAtividadeParticipanteDTO,
+  ) {
+    // Convert 'presenca' from boolean to number if defined
+    const prismaData = {
+      ...data,
+      presenca: typeof data.presenca === 'boolean' ? (data.presenca ? 1 : 0) : data.presenca,
+    };
     return this.prisma.data_atividade_participante.update({
-      where: { fk_data_atividade_fk_participante: { fk_data_atividade, fk_participante } },
-      data,
+      where: {
+        fk_data_atividade_fk_participante: {
+          fk_data_atividade,
+          fk_participante,
+        },
+      },
+      data: prismaData,
     });
   }
 
   async delete(fk_data_atividade: number, fk_participante: number) {
     return this.prisma.data_atividade_participante.delete({
-      where: { fk_data_atividade_fk_participante: { fk_data_atividade, fk_participante } },
+      where: {
+        fk_data_atividade_fk_participante: {
+          fk_data_atividade,
+          fk_participante,
+        },
+      },
     });
   }
 }

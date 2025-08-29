@@ -15,11 +15,16 @@ export class DataAtividadeService {
   }
 
   async findById(id_data_atividade: number) {
-    return this.prisma.data_atividade.findUnique({ where: { id_data_atividade } });
+    return this.prisma.data_atividade.findUnique({
+      where: { id_data_atividade },
+    });
   }
 
   async update(id_data_atividade: number, data: DataAtividadeDTO) {
-    return this.prisma.data_atividade.update({ where: { id_data_atividade }, data });
+    return this.prisma.data_atividade.update({
+      where: { id_data_atividade },
+      data,
+    });
   }
 
   async delete(id_data_atividade: number) {

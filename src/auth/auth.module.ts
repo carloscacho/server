@@ -11,7 +11,7 @@ import { JwtStrategy } from './jwt.strategy';
     UsuarioModule,
     PassportModule,
     JwtModule.register({
-      secret: 'SECRET_KEY', // Substitua por uma chave secreta segura
+      secret: process.env.SECRET_KEY, // Substitua por uma chave secreta segura
       signOptions: { expiresIn: '1h' },
     }),
   ],

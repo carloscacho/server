@@ -7,7 +7,16 @@ export class EventoService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: EventoDTO) {
-    return this.prisma.evento.create({ data });
+    // Map DTO fields to Prisma model fields
+    const { id_evento, data_inicio, data_fim, ...rest } = data;
+    return this.prisma.evento.create({
+      data: {
+        ...rest,
+        inicio: data_inicio,
+        final: data_fim,
+        ano: data_inicio instanceof Date ? data_inicio.getFullYear() : 0,
+      },
+    });
   }
 
   async findAll() {

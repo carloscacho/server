@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { DataAtividadeParticipanteService } from './data-atividade-participante.service';
 import { DataAtividadeParticipanteDTO } from './dto/data-atividade-participante.dto';
 
@@ -21,7 +29,10 @@ export class DataAtividadeParticipanteController {
     @Param('fk_data_atividade') fk_data_atividade: string,
     @Param('fk_participante') fk_participante: string,
   ) {
-    return this.service.findById(Number(fk_data_atividade), Number(fk_participante));
+    return this.service.findById(
+      Number(fk_data_atividade),
+      Number(fk_participante),
+    );
   }
 
   @Put(':fk_data_atividade/:fk_participante')
@@ -30,7 +41,11 @@ export class DataAtividadeParticipanteController {
     @Param('fk_participante') fk_participante: string,
     @Body() data: DataAtividadeParticipanteDTO,
   ) {
-    return this.service.update(Number(fk_data_atividade), Number(fk_participante), data);
+    return this.service.update(
+      Number(fk_data_atividade),
+      Number(fk_participante),
+      data,
+    );
   }
 
   @Delete(':fk_data_atividade/:fk_participante')
@@ -38,6 +53,9 @@ export class DataAtividadeParticipanteController {
     @Param('fk_data_atividade') fk_data_atividade: string,
     @Param('fk_participante') fk_participante: string,
   ) {
-    return this.service.delete(Number(fk_data_atividade), Number(fk_participante));
+    return this.service.delete(
+      Number(fk_data_atividade),
+      Number(fk_participante),
+    );
   }
 }

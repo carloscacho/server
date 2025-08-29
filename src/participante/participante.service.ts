@@ -19,7 +19,10 @@ export class ParticipanteService {
   }
 
   async update(id_participante: number, data: ParticipanteDTO) {
-    return this.prisma.participante.update({ where: { id_participante }, data });
+    return this.prisma.participante.update({
+      where: { id_participante },
+      data,
+    });
   }
 
   async delete(id_participante: number) {
