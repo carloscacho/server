@@ -14,10 +14,7 @@ import { EventoParticipanteModule } from './evento-participante/evento-participa
 import { PalestranteModule } from './palestrante/palestrante.module';
 import { PalestranteAtividadeModule } from './palestrante-atividade/palestrante-atividade.module';
 import { TurnoModule } from './turno/turno.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AuthModule } from './auth/auth.module';
-import { AdminMiddleware } from './common/middlewares/admin.middleware';
-import { AdminAuxMiddleware } from './common/middlewares/admin-aux.middleware';
 
 @Module({
   imports: [
@@ -39,23 +36,4 @@ import { AdminAuxMiddleware } from './common/middlewares/admin-aux.middleware';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  constructor(private readonly app: any) {
-    const config = new DocumentBuilder()
-      .setTitle('API CRUD IFMS EVENTOS')
-      .setDescription('Documentação da API do IFMS EVENTOS')
-      .setVersion('1.0')
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-  }
-
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AdminMiddleware) // Aplica o middleware
-      .forRoutes('evento') // Protege as rotas do módulo `evento`
-      .apply(AdminAuxMiddleware) // Aplica o middleware auxiliar
-      .forRoutes('certificado'); // Protege as rotas do módulo `certificado`
-  }
-}
+export class AppModule {}

@@ -6,16 +6,23 @@ import {
   Delete,
   Body,
   Param,
+  UsePipes,
+  ValidationPipe,
+  Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
-import { UsuarioDTO } from './dto/usuario.dto';
+import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO } from './dto/usuario.dto';
+import { Request } from 'express';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
+  // Cadastrar Usuário
   @Post()
-  create(@Body() data: UsuarioDTO) {
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async create(@Body() data: UsuarioDTO) {
     return this.usuarioService.create(data);
   }
 
@@ -25,17 +32,40 @@ export class UsuarioController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findById(Number(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usuarioService.findById(id);
   }
 
+  // Atualizar Usuário
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: UsuarioDTO) {
-    return this.usuarioService.update(Number(id), data);
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UsuarioDTO,
+  ) {
+    return this.usuarioService.update(id, data);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.usuarioService.delete(Number(id));
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.usuarioService.delete(id);
+  }
+
+  // Validar CPF
+  @Post('teste-cpf')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async testeCpf(@Body() data: TesteCpfDTO) {
+    return this.usuarioService.testeCpf(data.cpf);
+  }
+
+  // Alterar Senha
+  @Put('alterar-senha')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async alterarSenha(@Body() data: AlterarSenhaDTO, @Req() req: Request) {
+    // O objeto `user` é anexado à requisição pelo `JwtStrategy`.
+    // Usamos `(req.user as any)` para acessar a propriedade de forma segura
+    // até que uma tipagem customizada para a Request seja implementada.
+    const idUsuarioLogado = (req.user as any).id_usuario;
+    return this.usuarioService.alterarSenha(idUsuarioLogado, data);
   }
 }

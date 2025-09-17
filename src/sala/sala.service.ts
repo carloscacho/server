@@ -21,7 +21,7 @@ export class SalaService {
   async findById(id_sala: number) {
     return await this.prisma.sala.findFirst({
       where: {
-        id_sala,
+        id_sala: Number(id_sala),
       },
     });
   }

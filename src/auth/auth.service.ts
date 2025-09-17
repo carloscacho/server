@@ -11,11 +11,13 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, senha: string) {
-    const user = await this.usuarioService.findByEmail(email);
+    const user = await this.usuarioService.findByEmail(email, true);
+
     if (user && (await bcrypt.compare(senha, user.senha))) {
       const { senha, ...result } = user;
       return result;
     }
+
     throw new UnauthorizedException('Credenciais inválidas');
   }
 
@@ -27,6 +29,12 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id_usuario,
+        nome: user.nome,
+        email: user.email,
+        tipo: user.tipo,
+      },
     };
   }
 }

@@ -18,12 +18,12 @@ export class SalaController {
 
   @Get(":id")
   async findOne(@Param() params: any){
-    return await this.salaService.findById(params.id)
+    return await this.salaService.findById(Number(params.id))
   }
 
   @Put(":id")
   async update(@Param("id") id:number, data: SalaDTO) {
-    return await this.salaService.update(id, data)
+    return await this.salaService.update(Number(id), data)
   }
 
 

@@ -6,7 +6,9 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { EventoService } from './evento.service';
 import { EventoDTO } from './dto/evento.dto';
 
@@ -15,6 +17,7 @@ export class EventoController {
   constructor(private readonly eventoService: EventoService) {}
 
   @Post()
+  @UseGuards(AuthGuard('jwt')) 
   create(@Body() data: EventoDTO) {
     return this.eventoService.create(data);
   }

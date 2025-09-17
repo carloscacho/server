@@ -17,3 +17,5 @@ export class AtividadeModule implements NestModule {
       .forRoutes(AtividadeController); // Aplica às demais rotas do controller
   }
 }
+
+

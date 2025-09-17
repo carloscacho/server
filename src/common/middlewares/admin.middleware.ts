@@ -9,7 +9,8 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class AdminMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const user = req.user; // O `req.user` é preenchido pelo `JwtStrategy`
+    // Adiciona uma asserção de tipo para garantir que 'tipo' existe
+    const user = req.user as { tipo: number }; // O `req.user` é preenchido pelo `JwtStrategy`
 
     if (!user) {
       throw new UnauthorizedException('Usuário não autenticado');
