@@ -4,7 +4,7 @@ import { AtividadeDTO } from './dto/atividade.dto';
 
 @Injectable()
 export class AtividadeService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(data: AtividadeDTO) {
     return this.prisma.atividade.create({ data });
@@ -13,6 +13,28 @@ export class AtividadeService {
   async findAll() {
     return this.prisma.atividade.findMany();
   }
+
+ async findAllFullInfos(id_evento: number) {
+  return this.prisma.atividade.findMany({
+    where: {
+      fk_evento: {
+        equals: id_evento
+      }
+    },
+    include: {
+      sala: true,          // inclui dados da sala
+      palestrante_atividade: {
+        include: {
+          palestrante: true // inclui informações do palestrante
+        }
+      }
+    },
+    orderBy: {
+      id_atividade: 'desc'
+    }
+  });
+}
+
 
   async findById(id_atividade: number) {
     return this.prisma.atividade.findUnique({ where: { id_atividade } });

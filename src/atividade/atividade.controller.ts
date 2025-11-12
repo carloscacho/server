@@ -24,6 +24,12 @@ export class AtividadeController {
     return this.atividadeService.findAll();
   }
 
+  @Get("/full/:id_evento")
+  findAllFullInfos(@Param('id_evento') id_evento: string) {
+    return this.atividadeService.findAllFullInfos(Number(id_evento));
+  }
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.atividadeService.findById(Number(id));
