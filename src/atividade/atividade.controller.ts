@@ -25,13 +25,22 @@ export class AtividadeController {
   }
 
   @Get("/full/:id_evento")
-  findAllFullInfos(@Param('id_evento') id_evento: string) {
-    return this.atividadeService.findAllFullInfos(Number(id_evento));
+  findAllFullInfosById(@Param('id_evento') id_evento: string) {
+    return this.atividadeService.findAllFullInfosById(Number(id_evento));
+  }
+
+  @Get("/full")
+  findAllFullInfos() {
+    console.log("entrei na rota full")
+    return this.atividadeService.findAllFullInfos();
   }
 
 
   @Get(':id')
   findOne(@Param('id') id: string) {
+    console.log("entrei na rota id")
+    if(id.includes('full'))
+      return this.atividadeService.findAllFullInfos();
     return this.atividadeService.findById(Number(id));
   }
 

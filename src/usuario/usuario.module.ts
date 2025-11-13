@@ -22,6 +22,7 @@ export class UsuarioModule implements NestModule {
       .apply(AdminMiddleware)
       .exclude(
         { path: 'usuario', method: RequestMethod.POST },
+        { path: 'usuario', method: RequestMethod.GET },
         { path: 'usuario/teste-cpf', method: RequestMethod.POST },
         { path: 'usuario/alterar-senha', method: RequestMethod.PUT },
       )

@@ -14,7 +14,7 @@ export class AtividadeService {
     return this.prisma.atividade.findMany();
   }
 
- async findAllFullInfos(id_evento: number) {
+ async findAllFullInfosById(id_evento: number) {
   return this.prisma.atividade.findMany({
     where: {
       fk_evento: {
@@ -35,6 +35,21 @@ export class AtividadeService {
   });
 }
 
+ async findAllFullInfos() {
+  return this.prisma.atividade.findMany({
+    include: {
+      sala: true,          // inclui dados da sala
+      palestrante_atividade: {
+        include: {
+          palestrante: true // inclui informações do palestrante
+        }
+      }
+    },
+    orderBy: {
+      id_atividade: 'desc'
+    }
+  });
+}
 
   async findById(id_atividade: number) {
     return this.prisma.atividade.findUnique({ where: { id_atividade } });

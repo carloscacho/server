@@ -15,7 +15,8 @@ export class AtividadeModule implements NestModule {
       .apply(AdminMiddleware) // Aplica o middleware de admin
       .exclude({ path: 'atividade', method: RequestMethod.GET },          // GET /atividade
         { path: 'atividade/:id', method: RequestMethod.GET },       // GET /atividade/:id
-        { path: 'atividade/full/:id', method: RequestMethod.GET }   // GET /atividade/full/:id) // Exclui as rotas públicas
+        { path: 'atividade/full/:id', method: RequestMethod.GET },   // GET /atividade/full/:id) // Exclui as rotas públicas
+        { path: 'atividade/full', method: RequestMethod.GET }   // GET /atividade/full/) // Exclui as rotas públicas
       )
         .forRoutes(AtividadeController); // Aplica às demais rotas do controller
   }
