@@ -1,12 +1,26 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Habilita o CORS para permitir requisições de diferentes origens (como o seu frontend em localhost:3000)
-  app.enableCors();
+  // Habilita o CORS para permitir requisições apenas do frontend (localhost:3000)
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  // Habilita validação global para todos os endpoints
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // Configuração do Swagger
   const config = new DocumentBuilder()

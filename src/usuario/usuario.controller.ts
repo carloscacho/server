@@ -10,14 +10,16 @@ import {
   ValidationPipe,
   Req,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO } from './dto/usuario.dto';
 import { Request } from 'express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) {}
+  constructor(private readonly usuarioService: UsuarioService) { }
 
   // Cadastrar Usuário
   @Post()
@@ -37,6 +39,7 @@ export class UsuarioController {
   }
 
   // Atualizar Usuário
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async update(
@@ -46,6 +49,7 @@ export class UsuarioController {
     return this.usuarioService.update(id, data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.usuarioService.delete(id);
@@ -59,6 +63,7 @@ export class UsuarioController {
   }
 
   // Alterar Senha
+  @UseGuards(JwtAuthGuard)
   @Put('alterar-senha')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async alterarSenha(@Body() data: AlterarSenhaDTO, @Req() req: Request) {
