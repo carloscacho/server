@@ -1,9 +1,31 @@
+import { IsString, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
+
 export class AtividadeDTO {
+  @IsOptional()
+  @IsNumber()
   id_atividade?: number;
+
+  @IsNotEmpty()
+  @IsString()
   nome: string;
+
+  @IsOptional()
+  @IsString()
   descricao?: string;
+
+  @IsOptional()
+  @IsString()
   observacao?: string;
+
+  @IsOptional()
+  @IsNumber()
   limite?: number;
+
+  @IsOptional()
+  @IsNumber()
   fk_sala?: number;
+
+  @IsNotEmpty()
+  @IsNumber()
   fk_evento: number;
 }
