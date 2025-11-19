@@ -4,7 +4,7 @@ import { PalestranteDTO } from './dto/palestrante.dto';
 
 @Injectable()
 export class PalestranteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(data: PalestranteDTO) {
     return this.prisma.palestrante.create({ data });
@@ -24,5 +24,13 @@ export class PalestranteService {
 
   async delete(id_palestrante: number) {
     return this.prisma.palestrante.delete({ where: { id_palestrante } });
+  }
+
+  async findByEventoId(id_evento: number) {
+    return this.prisma.palestrante.findMany({
+      where: {
+        fk_evento: id_evento,
+      },
+    });
   }
 }

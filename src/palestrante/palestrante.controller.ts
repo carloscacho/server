@@ -12,7 +12,7 @@ import { PalestranteDTO } from './dto/palestrante.dto';
 
 @Controller('palestrante')
 export class PalestranteController {
-  constructor(private readonly palestranteService: PalestranteService) {}
+  constructor(private readonly palestranteService: PalestranteService) { }
 
   @Post()
   create(@Body() data: PalestranteDTO) {
@@ -37,5 +37,10 @@ export class PalestranteController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.palestranteService.delete(Number(id));
+  }
+
+  @Get('full/:id')
+  findByEventoId(@Param('id') id: string) {
+    return this.palestranteService.findByEventoId(Number(id));
   }
 }

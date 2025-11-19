@@ -1,4 +1,10 @@
-export type SalaDTO = {
-  id_sala?: number,
-  nome: string
+import { IsString, IsOptional, IsNumber } from 'class-validator';
+
+export class SalaDTO {
+  @IsOptional()
+  @IsNumber()
+  id_sala?: number;
+
+  @IsString()
+  nome: string;
 }
