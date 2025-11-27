@@ -14,10 +14,9 @@ import { EventoDTO } from './dto/evento.dto';
 
 @Controller('evento')
 export class EventoController {
-  constructor(private readonly eventoService: EventoService) {}
+  constructor(private readonly eventoService: EventoService) { }
 
   @Post()
-  @UseGuards(AuthGuard('jwt')) 
   create(@Body() data: EventoDTO) {
     return this.eventoService.create(data);
   }

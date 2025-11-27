@@ -20,4 +20,8 @@ export class EventoDTO {
   @IsNotEmpty()
   @IsDateString()
   data_fim: Date;
+
+  @IsNotEmpty()
+  @IsNumber()
+  ano: number;
 }
