@@ -28,7 +28,16 @@ export class EventoService {
   }
 
   async update(id_evento: number, data: EventoDTO) {
-    return this.prisma.evento.update({ where: { id_evento }, data });
+    const { ano, id_evento: id, data_inicio, data_fim, ...rest } = data;
+    return this.prisma.evento.update({
+      where: { id_evento },
+      data: {
+        ...rest,
+        inicio: data_inicio,
+        final: data_fim,
+        ano,
+      },
+    });
   }
 
   async delete(id_evento: number) {
