@@ -16,22 +16,4 @@ import { AuthMiddleware } from 'src/common/middlewares/auth.middleware';
   controllers: [UsuarioController],
   exports: [UsuarioService],
 })
-export class UsuarioModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AdminMiddleware)
-      .exclude(
-        { path: 'usuario', method: RequestMethod.POST },
-        { path: 'usuario', method: RequestMethod.GET },
-        { path: 'usuario/teste-cpf', method: RequestMethod.POST },
-        { path: 'usuario/alterar-senha', method: RequestMethod.PUT },
-      )
-      .forRoutes(UsuarioController);
-
-    // Aplica o middleware de autenticação (qualquer usuário logado)
-    // especificamente para a rota de alterar senha.
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes({ path: 'usuario/alterar-senha', method: RequestMethod.PUT });
-  }
-}
+export class UsuarioModule { }

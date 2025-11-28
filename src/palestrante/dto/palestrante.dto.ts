@@ -20,6 +20,6 @@ export class PalestranteDTO {
   instituicao?: string;
 
   @IsOptional()
-  @IsNumber()
-  fk_evento?: number;
+  @IsNumber({}, { each: true })
+  eventos?: number[];
 }

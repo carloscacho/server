@@ -13,15 +13,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
-import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO } from './dto/usuario.dto';
+import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO, UpdateUsuarioDTO } from './dto/usuario.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
   // Cadastrar Usuário
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1)
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() data: UsuarioDTO) {
@@ -39,17 +43,19 @@ export class UsuarioController {
   }
 
   // Atualizar Usuário
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1)
   @Put(':id')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UsuarioDTO,
+    @Body() data: UpdateUsuarioDTO,
   ) {
     return this.usuarioService.update(id, data);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1)
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.usuarioService.delete(id);

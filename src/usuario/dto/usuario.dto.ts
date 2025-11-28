@@ -6,6 +6,7 @@ import {
   IsInt,
   IsOptional,
 } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
 
 export class UsuarioDTO {
   @IsOptional()
@@ -44,6 +45,8 @@ export class UsuarioDTO {
   @IsString()
   instituicao?: string;
 }
+
+export class UpdateUsuarioDTO extends PartialType(UsuarioDTO) { }
 
 export class AlterarSenhaDTO {
   @IsNotEmpty()

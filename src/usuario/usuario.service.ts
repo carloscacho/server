@@ -4,12 +4,12 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
-import { UsuarioDTO, AlterarSenhaDTO } from './dto/usuario.dto';
+import { UsuarioDTO, AlterarSenhaDTO, UpdateUsuarioDTO } from './dto/usuario.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuarioService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   private removePassword(user: any) {
     const { senha, ...result } = user;
@@ -66,7 +66,7 @@ export class UsuarioService {
   }
 
   // Atualizar Usuário
-  async update(id_usuario: number, data: UsuarioDTO) {
+  async update(id_usuario: number, data: UpdateUsuarioDTO) {
     const { senha, ...rest } = data;
 
     // Hash da senha, se fornecida

@@ -69,7 +69,7 @@ model evento {
   ano                 Int                   @db.Year
   atividade           atividade[]
   evento_participante evento_participante[]
-  palestrante         palestrante[]
+  palestrante_evento  palestrante_evento[]
 }
 
 model evento_participante {
@@ -89,11 +89,19 @@ model palestrante {
   email                 String                  @db.VarChar(100)
   instituicao           String?                 @db.VarChar(100)
   foto                  String?                 @db.VarChar(70)
-  fk_evento             Int?                    @db.UnsignedSmallInt
-  evento                evento?                 @relation(fields: [fk_evento], references: [id_evento], onDelete: NoAction, onUpdate: NoAction, map: "fk_palestrante_evento1")
   palestrante_atividade palestrante_atividade[]
+  palestrante_evento    palestrante_evento[]
+}
 
-  @@index([fk_evento], map: "fk_palestrante_evento1_idx")
+model palestrante_evento {
+  fk_palestrante Int         @db.UnsignedSmallInt
+  fk_evento      Int         @db.UnsignedSmallInt
+  palestrante    palestrante @relation(fields: [fk_palestrante], references: [id_palestrante], onDelete: Cascade, onUpdate: NoAction, map: "fk_palestrante_evento_palestrante")
+  evento         evento      @relation(fields: [fk_evento], references: [id_evento], onDelete: Cascade, onUpdate: NoAction, map: "fk_palestrante_evento_evento")
+
+  @@id([fk_palestrante, fk_evento])
+  @@index([fk_evento], map: "fk_palestrante_evento_evento_idx")
+  @@index([fk_palestrante], map: "fk_palestrante_evento_palestrante_idx")
 }
 
 model palestrante_atividade {
