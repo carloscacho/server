@@ -1,98 +1,80 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Eventos IFMS - Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API RESTful para o sistema de gerenciamento de eventos do IFMS. Desenvolvida com [NestJS](https://nestjs.com/) e [Prisma ORM](https://www.prisma.io/), esta aplicação fornece os serviços necessários para o funcionamento do frontend, gerenciando regras de negócio e persistência de dados.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Tecnologias Utilizadas
 
-## Description
+- **[NestJS](https://nestjs.com/)**: Framework Node.js progressivo para construção de aplicações server-side eficientes e escaláveis.
+- **[Prisma](https://www.prisma.io/)**: ORM moderno para Node.js e TypeScript.
+- **[MySQL](https://www.mysql.com/)**: Banco de dados relacional.
+- **[TypeScript](https://www.typescriptlang.org/)**: Superset tipado de JavaScript.
+- **[Class Validator](https://github.com/typestack/class-validator)**: Biblioteca para validação de dados baseada em decoradores.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ Funcionalidades da API
 
-## Project setup
+- **CRUD Completo**: Endpoints para criação, leitura, atualização e exclusão de:
+    - Eventos
+    - Atividades
+    - Palestrantes
+    - Salas
+    - Turmas
+    - Turnos
+    - Usuários
+- **Relacionamentos**: Gerenciamento de vínculos complexos (ex: Palestrantes em Atividades, Atividades em Salas).
+- **Tratamento de Erros**: Respostas padronizadas e tratamento específico para violações de integridade referencial (ex: impedir exclusão de registros em uso).
+- **DTOs (Data Transfer Objects)**: Validação rigorosa de dados de entrada.
 
-```bash
-$ yarn install
-```
+## 📦 Instalação e Execução
 
-## Compile and run the project
+1.  **Navegue até a pasta do servidor**:
+    ```bash
+    cd eventosIFMS/server
+    ```
 
-```bash
-# development
-$ yarn run start
+2.  **Instale as dependências**:
+    ```bash
+    npm install
+    # ou
+    yarn install
+    ```
 
-# watch mode
-$ yarn run start:dev
+3.  **Configuração do Banco de Dados**:
+    - Certifique-se de ter um servidor MySQL rodando.
+    - Crie um arquivo `.env` na raiz da pasta `server` com a string de conexão:
+      ```env
+      DATABASE_URL="mysql://usuario:senha@localhost:3306/nome_do_banco"
+      ```
+    - Execute as migrações do Prisma para criar as tabelas:
+      ```bash
+      npx prisma migrate dev
+      ```
 
-# production mode
-$ yarn run start:prod
-```
+4.  **Execute a aplicação**:
+    ```bash
+    # desenvolvimento
+    npm run start:dev
 
-## Run tests
+    # produção
+    npm run start:prod
+    ```
 
-```bash
-# unit tests
-$ yarn run test
+    A API estará disponível em `http://localhost:3001` (ou a porta configurada).
 
-# e2e tests
-$ yarn run test:e2e
+## 🛠️ Comandos Úteis
 
-# test coverage
-$ yarn run test:cov
-```
+- **Gerar Cliente Prisma**: `npx prisma generate` (necessário após alterações no `schema.prisma`).
+- **Visualizar Banco de Dados**: `npx prisma studio` (abre uma interface web para gerenciar os dados).
 
-## Deployment
+## 📂 Estrutura de Módulos
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+A aplicação segue a arquitetura modular do NestJS:
+- `src/atividade`: Módulo de atividades.
+- `src/evento`: Módulo de eventos.
+- `src/palestrante`: Módulo de palestrantes.
+- `src/sala`: Módulo de salas.
+- `src/usuario`: Módulo de usuários.
+- `src/database`: Configuração e serviço do Prisma.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🤝 Contribuição
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.

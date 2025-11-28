@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsNotEmpty, IsArray, IsObject } from 'class-validator';
 
 export class AtividadeDTO {
   @IsOptional()
@@ -28,4 +28,16 @@ export class AtividadeDTO {
   @IsNotEmpty()
   @IsNumber()
   fk_evento: number;
+
+  @IsOptional()
+  @IsArray()
+  palestrantes?: number[];
+
+  @IsOptional()
+  @IsObject()
+  data_atividade?: {
+    data: string;
+    hora: string;
+    duracao?: string;
+  };
 }
