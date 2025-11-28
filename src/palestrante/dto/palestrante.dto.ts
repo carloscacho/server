@@ -16,6 +16,10 @@ export class PalestranteDTO {
   telefone?: string;
 
   @IsOptional()
+  @IsString()
+  instituicao?: string;
+
+  @IsOptional()
   @IsNumber()
   fk_evento?: number;
 }
