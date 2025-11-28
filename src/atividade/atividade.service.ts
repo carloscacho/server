@@ -66,7 +66,8 @@ export class AtividadeService {
           include: {
             palestrante: true // inclui informações do palestrante
           }
-        }
+        },
+        data_atividade: true // inclui dados de data e hora
       },
       orderBy: {
         id_atividade: 'desc'
@@ -82,7 +83,8 @@ export class AtividadeService {
           include: {
             palestrante: true // inclui informações do palestrante
           }
-        }
+        },
+        data_atividade: true // inclui dados de data e hora
       },
       orderBy: {
         id_atividade: 'desc'
