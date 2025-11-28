@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { TurnoDTO } from './dto/turno.dto';
 
 @Injectable()
 export class TurnoService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(data: TurnoDTO) {
     return this.prisma.turno.create({ data });
@@ -23,6 +23,13 @@ export class TurnoService {
   }
 
   async delete(id_turno: number) {
-    return this.prisma.turno.delete({ where: { id_turno } });
+    try {
+      return await this.prisma.turno.delete({ where: { id_turno } });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Não é possível deletar este turno pois ele está vinculado a outros registros.');
+      }
+      throw error;
+    }
   }
 }

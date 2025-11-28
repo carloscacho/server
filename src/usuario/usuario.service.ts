@@ -152,9 +152,15 @@ export class UsuarioService {
   }
 
   async delete(id_usuario: number) {
-    const user = await this.prisma.usuario.delete({ where: { id_usuario } });
-
-    return this.removePassword(user);
+    try {
+      const user = await this.prisma.usuario.delete({ where: { id_usuario } });
+      return this.removePassword(user);
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Não é possível deletar este usuário pois ele está vinculado a outros registros.');
+      }
+      throw error;
+    }
   }
 
   async findByEmail(email: string, includePassword = false) {

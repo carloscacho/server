@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { PalestranteDTO } from './dto/palestrante.dto';
 
@@ -102,7 +102,14 @@ export class PalestranteService {
   }
 
   async delete(id_palestrante: number) {
-    return this.prisma.palestrante.delete({ where: { id_palestrante } });
+    try {
+      return await this.prisma.palestrante.delete({ where: { id_palestrante } });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Não é possível deletar este palestrante pois ele está vinculado a outros registros.');
+      }
+      throw error;
+    }
   }
 
   async findByEventoId(id_evento: number) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { SalaDTO } from './dto/sala.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
@@ -43,10 +43,17 @@ export class SalaService {
 
     if (!salaExists) throw new Error('Sala não encontrada');
 
-    return await this.prisma.sala.delete({
-      where: {
-        id_sala: id,
-      },
-    });
+    try {
+      return await this.prisma.sala.delete({
+        where: {
+          id_sala: id,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Não é possível deletar esta sala pois ela está vinculada a outros registros.');
+      }
+      throw error;
+    }
   }
 }

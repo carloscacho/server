@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { EventoDTO } from './dto/evento.dto';
 
@@ -41,6 +41,13 @@ export class EventoService {
   }
 
   async delete(id_evento: number) {
-    return this.prisma.evento.delete({ where: { id_evento } });
+    try {
+      return await this.prisma.evento.delete({ where: { id_evento } });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Não é possível deletar este evento pois ele está vinculado a outros registros.');
+      }
+      throw error;
+    }
   }
 }
