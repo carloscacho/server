@@ -5,24 +5,28 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root@localhost:3306/pro67006_sisnovaera"
+  url      = env("DATABASE_URL")
 }
 
 model atividade {
-  id_atividade          Int                     @id @default(autoincrement()) @db.UnsignedMediumInt
-  nome                  String                  @db.VarChar(100)
-  descricao             String?                 @db.VarChar(255)
-  observacao            String?                 @db.VarChar(200)
-  limite                Int?                    @db.UnsignedSmallInt
-  fk_sala               Int?                    @db.UnsignedTinyInt
-  fk_evento             Int                     @db.UnsignedSmallInt
-  evento                evento                  @relation(fields: [fk_evento], references: [id_evento], onDelete: NoAction, onUpdate: NoAction, map: "fk_atividade_evento1")
-  sala                  sala?                   @relation(fields: [fk_sala], references: [id_sala], onDelete: NoAction, onUpdate: NoAction, map: "fk_atividade_sala1")
-  data_atividade        data_atividade[]
-  palestrante_atividade palestrante_atividade[]
+  id_atividade           Int                     @id @default(autoincrement()) @db.UnsignedMediumInt
+  nome                   String                  @db.VarChar(100)
+  descricao              String?                 @db.VarChar(255)
+  observacao             String?                 @db.VarChar(200)
+  limite                 Int?                    @db.UnsignedSmallInt
+  fk_sala                Int?                    @db.UnsignedTinyInt
+  fk_evento              Int                     @db.UnsignedSmallInt
+  fk_atividade_vinculada Int?                    @db.UnsignedMediumInt
+  evento                 evento                  @relation(fields: [fk_evento], references: [id_evento], onDelete: NoAction, onUpdate: NoAction, map: "fk_atividade_evento1")
+  sala                   sala?                   @relation(fields: [fk_sala], references: [id_sala], onDelete: NoAction, onUpdate: NoAction, map: "fk_atividade_sala1")
+  atividade_vinculada    atividade?              @relation("AtividadeVinculada", fields: [fk_atividade_vinculada], references: [id_atividade], onDelete: NoAction, onUpdate: NoAction, map: "fk_atividade_atividade1")
+  atividades_filhas      atividade[]             @relation("AtividadeVinculada")
+  data_atividade         data_atividade[]
+  palestrante_atividade  palestrante_atividade[]
 
   @@index([fk_evento], map: "fk_atividade_evento1_idx")
   @@index([fk_sala], map: "fk_atividade_sala1_idx")
+  @@index([fk_atividade_vinculada], map: "fk_atividade_atividade1_idx")
 }
 
 model certificado {
@@ -67,6 +71,11 @@ model evento {
   inicio              DateTime              @db.Date
   final               DateTime              @db.Date
   ano                 Int                   @db.Year
+  slug                String?               @db.VarChar(100)
+  banner              String?               @db.VarChar(255)
+  cor_primaria        String?               @db.VarChar(20)
+  cor_secundaria      String?               @db.VarChar(20)
+  base_url            String?               @db.VarChar(255)
   atividade           atividade[]
   evento_participante evento_participante[]
   palestrante_evento  palestrante_evento[]

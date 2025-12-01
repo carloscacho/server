@@ -4,7 +4,7 @@ import { DataAtividadeParticipanteDTO } from './dto/data-atividade-participante.
 
 @Injectable()
 export class DataAtividadeParticipanteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(data: DataAtividadeParticipanteDTO) {
     // Convert 'presenca' from boolean to number if defined
@@ -12,7 +12,46 @@ export class DataAtividadeParticipanteService {
       ...data,
       presenca: typeof data.presenca === 'boolean' ? (data.presenca ? 1 : 0) : data.presenca,
     };
-    return this.prisma.data_atividade_participante.create({ data: prismaData });
+    const created = await this.prisma.data_atividade_participante.create({ data: prismaData });
+
+    // Auto-subscribe to linked activity
+    try {
+      const session = await this.prisma.data_atividade.findUnique({
+        where: { id_data_atividade: data.fk_data_atividade },
+        include: { atividade: true }
+      });
+
+      if (session?.atividade?.fk_atividade_vinculada) {
+        const linkedSession = await this.prisma.data_atividade.findFirst({
+          where: { fk_atividade: session.atividade.fk_atividade_vinculada }
+        });
+
+        if (linkedSession) {
+          const exists = await this.prisma.data_atividade_participante.findUnique({
+            where: {
+              fk_data_atividade_fk_participante: {
+                fk_data_atividade: linkedSession.id_data_atividade,
+                fk_participante: data.fk_participante
+              }
+            }
+          });
+
+          if (!exists) {
+            await this.prisma.data_atividade_participante.create({
+              data: {
+                fk_data_atividade: linkedSession.id_data_atividade,
+                fk_participante: data.fk_participante,
+                presenca: 0
+              }
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error auto-subscribing to linked activity:", error);
+    }
+
+    return created;
   }
 
   async findAll() {

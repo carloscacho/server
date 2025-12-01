@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SalaModule } from './sala/sala.module';
@@ -18,6 +19,9 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     SalaModule,
     TurmaModule,
     UsuarioModule,
@@ -31,9 +35,10 @@ import { AuthModule } from './auth/auth.module';
     PalestranteModule,
     PalestranteAtividadeModule,
     TurnoModule,
+    TurnoModule,
     AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

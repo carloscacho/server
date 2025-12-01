@@ -24,4 +24,20 @@ export class EventoDTO {
   @IsNotEmpty()
   @IsNumber()
   ano: number;
+
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
+  @IsOptional()
+  @IsString()
+  banner?: string;
+
+  @IsOptional()
+  @IsString()
+  cor_primaria?: string;
+
+  @IsOptional()
+  @IsString()
+  cor_secundaria?: string;
 }

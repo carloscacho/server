@@ -30,6 +30,10 @@ export class AtividadeDTO {
   fk_evento: number;
 
   @IsOptional()
+  @IsNumber()
+  fk_atividade_vinculada?: number;
+
+  @IsOptional()
   @IsArray()
   palestrantes?: number[];
 
