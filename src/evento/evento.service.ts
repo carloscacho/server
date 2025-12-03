@@ -27,6 +27,17 @@ export class EventoService {
     return this.prisma.evento.findUnique({ where: { id_evento } });
   }
 
+  async findBySlug(slug: string) {
+    return this.prisma.evento.findFirst({
+      where: { slug },
+      include: {
+        _count: {
+          select: { atividade: true }
+        }
+      }
+    });
+  }
+
   async update(id_evento: number, data: EventoDTO) {
     const { ano, id_evento: id, data_inicio, data_fim, ...rest } = data;
     return this.prisma.evento.update({
