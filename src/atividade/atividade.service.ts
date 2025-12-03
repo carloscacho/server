@@ -67,7 +67,13 @@ export class AtividadeService {
             palestrante: true // inclui informações do palestrante
           }
         },
-        data_atividade: true // inclui dados de data e hora
+        data_atividade: {
+          include: {
+            _count: {
+              select: { data_atividade_participante: true }
+            }
+          }
+        }
       },
       orderBy: {
         id_atividade: 'desc'
@@ -84,7 +90,13 @@ export class AtividadeService {
             palestrante: true // inclui informações do palestrante
           }
         },
-        data_atividade: true // inclui dados de data e hora
+        data_atividade: {
+          include: {
+            _count: {
+              select: { data_atividade_participante: true }
+            }
+          }
+        }
       },
       orderBy: {
         id_atividade: 'desc'

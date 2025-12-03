@@ -8,7 +8,7 @@ export class AuthService {
   constructor(
     private readonly usuarioService: UsuarioService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, senha: string) {
     const user = await this.usuarioService.findByEmail(email, true);
@@ -33,7 +33,12 @@ export class AuthService {
         id: user.id_usuario,
         nome: user.nome,
         email: user.email,
+        cpf: user.cpf,
         tipo: user.tipo,
+        instituicao: user.instituicao,
+        comunidade: user.comunidade,
+        ra: user.ra,
+        participante: user.participante,
       },
     };
   }

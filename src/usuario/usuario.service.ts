@@ -166,6 +166,7 @@ export class UsuarioService {
   async findByEmail(email: string, includePassword = false) {
     const user = await this.prisma.usuario.findUnique({
       where: { email },
+      include: { participante: true },
     });
 
     if (!user) {
