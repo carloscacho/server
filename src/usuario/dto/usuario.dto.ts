@@ -51,11 +51,11 @@ export class UpdateUsuarioDTO extends PartialType(UsuarioDTO) { }
 export class AlterarSenhaDTO {
   @IsNotEmpty()
   @MinLength(6)
-  senha: string;
+  senhaAtual: string;
 
   @IsNotEmpty()
   @MinLength(6)
-  confsenha: string;
+  novaSenha: string;
 }
 
 export class TesteCpfDTO {

@@ -12,7 +12,7 @@ import { DataAtividadeParticipanteDTO } from './dto/data-atividade-participante.
 
 @Controller('data-atividade-participante')
 export class DataAtividadeParticipanteController {
-  constructor(private readonly service: DataAtividadeParticipanteService) {}
+  constructor(private readonly service: DataAtividadeParticipanteService) { }
 
   @Post()
   create(@Body() data: DataAtividadeParticipanteDTO) {
@@ -22,6 +22,11 @@ export class DataAtividadeParticipanteController {
   @Get()
   findAll() {
     return this.service.findAll();
+  }
+
+  @Get('participante/:fk_participante')
+  findByParticipante(@Param('fk_participante') fk_participante: string) {
+    return this.service.findByParticipante(Number(fk_participante));
   }
 
   @Get(':fk_data_atividade/:fk_participante')

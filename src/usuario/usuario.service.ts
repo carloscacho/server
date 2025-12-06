@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { UsuarioDTO, AlterarSenhaDTO, UpdateUsuarioDTO } from './dto/usuario.dto';
@@ -105,28 +106,29 @@ export class UsuarioService {
   }
 
   // Alterar Senha
-  async alterarSenha(idUsuarioLogado: number, data: AlterarSenhaDTO) {
-    const { senha, confsenha } = data;
-
-    if (senha !== confsenha) {
-      throw new BadRequestException('As senhas não conferem.');
-    }
-
-    const usuario = await this.prisma.usuario.findUnique({
-      where: { id_usuario: idUsuarioLogado },
+  async alterarSenha(id_usuario: number, data: AlterarSenhaDTO) {
+    // Buscar o usuário
+    const user = await this.prisma.usuario.findUnique({
+      where: { id_usuario },
     });
 
-    if (!usuario) {
-      throw new NotFoundException(
-        `Usuário com ID ${idUsuarioLogado} não encontrado.`,
-      );
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
     }
 
-    const hashedPassword = await bcrypt.hash(senha, 10);
+    // Verificar se a senha atual está correta
+    const senhaValida = await bcrypt.compare(data.senhaAtual, user.senha);
+    if (!senhaValida) {
+      throw new UnauthorizedException('Senha atual incorreta');
+    }
 
+    // Hash da nova senha
+    const novaSenhaHash = await bcrypt.hash(data.novaSenha, 10);
+
+    // Atualizar a senha
     await this.prisma.usuario.update({
-      where: { id_usuario: idUsuarioLogado },
-      data: { senha: hashedPassword },
+      where: { id_usuario },
+      data: { senha: novaSenhaHash },
     });
 
     return { message: 'Senha alterada com sucesso.' };

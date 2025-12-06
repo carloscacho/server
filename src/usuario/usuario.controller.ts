@@ -37,6 +37,27 @@ export class UsuarioController {
     return this.usuarioService.findAll();
   }
 
+  // Atualizar Perfil (próprio usuário)
+  @UseGuards(JwtAuthGuard)
+  @Put('perfil')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updatePerfil(@Body() data: UpdateUsuarioDTO, @Req() req: Request) {
+    const idUsuarioLogado = (req.user as any).id_usuario;
+    return this.usuarioService.update(idUsuarioLogado, data);
+  }
+
+  // Alterar Senha
+  @UseGuards(JwtAuthGuard)
+  @Put('alterar-senha')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async alterarSenha(@Body() data: AlterarSenhaDTO, @Req() req: Request) {
+    // O objeto `user` é anexado à requisição pelo `JwtStrategy`.
+    // Usamos `(req.user as any)` para acessar a propriedade de forma segura
+    // até que uma tipagem customizada para a Request seja implementada.
+    const idUsuarioLogado = (req.user as any).id_usuario;
+    return this.usuarioService.alterarSenha(idUsuarioLogado, data);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usuarioService.findById(id);
@@ -68,15 +89,5 @@ export class UsuarioController {
     return this.usuarioService.testeCpf(data.cpf);
   }
 
-  // Alterar Senha
-  @UseGuards(JwtAuthGuard)
-  @Put('alterar-senha')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async alterarSenha(@Body() data: AlterarSenhaDTO, @Req() req: Request) {
-    // O objeto `user` é anexado à requisição pelo `JwtStrategy`.
-    // Usamos `(req.user as any)` para acessar a propriedade de forma segura
-    // até que uma tipagem customizada para a Request seja implementada.
-    const idUsuarioLogado = (req.user as any).id_usuario;
-    return this.usuarioService.alterarSenha(idUsuarioLogado, data);
-  }
+
 }
