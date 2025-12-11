@@ -16,6 +16,7 @@ import { PalestranteModule } from './palestrante/palestrante.module';
 import { PalestranteAtividadeModule } from './palestrante-atividade/palestrante-atividade.module';
 import { TurnoModule } from './turno/turno.module';
 import { AuthModule } from './auth/auth.module';
+import { InscricaoModule } from './inscricao/inscricao.module';
 
 @Module({
   imports: [
@@ -35,8 +36,8 @@ import { AuthModule } from './auth/auth.module';
     PalestranteModule,
     PalestranteAtividadeModule,
     TurnoModule,
-    TurnoModule,
     AuthModule,
+    InscricaoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

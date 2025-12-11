@@ -18,10 +18,14 @@ import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.use-case';
 
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) { }
+  constructor(
+    private readonly usuarioService: UsuarioService,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
+  ) { }
 
   // Cadastrar Usuário
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -46,16 +50,17 @@ export class UsuarioController {
     return this.usuarioService.update(idUsuarioLogado, data);
   }
 
-  // Alterar Senha
+  // Alterar Senha (usando Use Case)
   @UseGuards(JwtAuthGuard)
   @Put('alterar-senha')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async alterarSenha(@Body() data: AlterarSenhaDTO, @Req() req: Request) {
-    // O objeto `user` é anexado à requisição pelo `JwtStrategy`.
-    // Usamos `(req.user as any)` para acessar a propriedade de forma segura
-    // até que uma tipagem customizada para a Request seja implementada.
     const idUsuarioLogado = (req.user as any).id_usuario;
-    return this.usuarioService.alterarSenha(idUsuarioLogado, data);
+    return this.changePasswordUseCase.execute({
+      userId: idUsuarioLogado,
+      currentPassword: data.senhaAtual,
+      newPassword: data.novaSenha,
+    });
   }
 
   @Get(':id')
@@ -88,6 +93,4 @@ export class UsuarioController {
   async testeCpf(@Body() data: TesteCpfDTO) {
     return this.usuarioService.testeCpf(data.cpf);
   }
-
-
 }
