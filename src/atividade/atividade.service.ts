@@ -224,4 +224,25 @@ export class AtividadeService {
       });
     });
   }
+  async findByIdWithParticipants(id_atividade: number) {
+    return this.prisma.atividade.findUnique({
+      where: { id_atividade },
+      include: {
+        sala: true,
+        data_atividade: {
+          include: {
+            data_atividade_participante: {
+              include: {
+                participante: {
+                  include: {
+                    usuario: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  }
 }

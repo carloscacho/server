@@ -116,6 +116,7 @@ export class DataAtividadeParticipanteService {
     const prismaData = {
       ...data,
       presenca: typeof data.presenca === 'boolean' ? (data.presenca ? 1 : 0) : data.presenca,
+      data_hora: new Date()
     };
     return this.prisma.data_atividade_participante.update({
       where: {

@@ -42,6 +42,12 @@ export class AtividadeController {
   }
 
 
+
+  @Get(':id/participantes')
+  findByIdWithParticipants(@Param('id') id: string) {
+    return this.atividadeService.findByIdWithParticipants(Number(id));
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log("entrei na rota id")

@@ -10,4 +10,7 @@ export class DataAtividadeParticipanteDTO {
   @IsOptional()
   @IsNumber()
   presenca?: number;
+  
+  @IsOptional()
+  data_hora?: Date;
 }
