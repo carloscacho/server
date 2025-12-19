@@ -25,6 +25,13 @@ export class AtividadeController {
     return this.atividadeService.create(data);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1)
+  @Post('batch')
+  createBatch(@Body() data: { atividades: AtividadeDTO[] }) {
+    return this.atividadeService.createBatch(data.atividades);
+  }
+
   @Get()
   findAll() {
     return this.atividadeService.findAll();

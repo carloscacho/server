@@ -32,19 +32,38 @@ export class AtividadeService {
       }
     }
 
+    // Helper to safely parse time string to Date
+    const parseTimeToDate = (timeStr: string | null | undefined): Date | undefined => {
+      if (!timeStr) return undefined;
+      // Validate format HH:MM
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+      if (!timeRegex.test(timeStr)) return undefined;
+      const date = new Date(`1970-01-01T${timeStr}:00.000Z`);
+      return isNaN(date.getTime()) ? undefined : date;
+    };
+
+    // Build data_atividade only if hora is valid
+    let dataAtividadeCreate: { create: { data: Date; hora: Date; duracao?: Date } } | undefined = undefined;
+    if (data_atividade && data_atividade.hora) {
+      const horaDate = parseTimeToDate(data_atividade.hora);
+      if (horaDate) {
+        dataAtividadeCreate = {
+          create: {
+            data: new Date(data_atividade.data),
+            hora: horaDate,
+            duracao: parseTimeToDate(data_atividade.duracao)
+          }
+        };
+      }
+    }
+
     return this.prisma.atividade.create({
       data: {
         ...rest,
         palestrante_atividade: palestrantes && palestrantes.length > 0 ? {
           create: palestrantes.map(id => ({ fk_palestrante: id }))
         } : undefined,
-        data_atividade: data_atividade ? {
-          create: {
-            data: new Date(data_atividade.data),
-            hora: new Date(`1970-01-01T${data_atividade.hora}:00.000Z`),
-            duracao: data_atividade.duracao ? new Date(`1970-01-01T${data_atividade.duracao}:00.000Z`) : undefined
-          }
-        } : undefined
+        data_atividade: dataAtividadeCreate
       }
     });
   }
@@ -244,5 +263,30 @@ export class AtividadeService {
         }
       }
     });
+  }
+
+  /**
+   * Create multiple activities in batch
+   * Returns success and error arrays for reporting
+   */
+  async createBatch(atividades: AtividadeDTO[]) {
+    const results = {
+      success: [] as any[],
+      errors: [] as { nome: string; error: string }[]
+    };
+
+    for (const atividade of atividades) {
+      try {
+        const created = await this.create(atividade);
+        results.success.push(created);
+      } catch (error) {
+        results.errors.push({
+          nome: atividade.nome,
+          error: error.message || 'Erro desconhecido'
+        });
+      }
+    }
+
+    return results;
   }
 }

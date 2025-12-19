@@ -20,7 +20,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usuarioService: UsuarioService,
-  ) {}
+  ) { }
 
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -36,4 +36,11 @@ export class AuthController {
     this.logger.log(`Usuário logando: ${req.user.email}`);
     return this.authService.login(req.user);
   }
+
+  @Post('refresh')
+  async refresh(@Body('refresh_token') refreshToken: string) {
+    this.logger.log('Renovando access token');
+    return this.authService.refreshToken(refreshToken);
+  }
 }
+
