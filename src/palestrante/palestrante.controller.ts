@@ -25,9 +25,22 @@ export class PalestranteController {
     return this.palestranteService.create(data);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1)
+  @Post('batch')
+  createBatch(@Body() data: { palestrantes: PalestranteDTO[], fk_evento: number }) {
+    return this.palestranteService.createBatch(data.palestrantes, data.fk_evento);
+  }
+
   @Get()
   findAll() {
     return this.palestranteService.findAll();
+  }
+
+  // This must come BEFORE :id to avoid routing conflict
+  @Get('full/:id_evento')
+  findByEventoId(@Param('id_evento') id_evento: string) {
+    return this.palestranteService.findByEventoId(Number(id_evento));
   }
 
   @Get(':id')
@@ -47,10 +60,5 @@ export class PalestranteController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.palestranteService.delete(Number(id));
-  }
-
-  @Get('full/:id')
-  findByEventoId(@Param('id') id: string) {
-    return this.palestranteService.findByEventoId(Number(id));
   }
 }

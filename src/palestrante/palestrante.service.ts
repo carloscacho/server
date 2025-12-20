@@ -130,4 +130,63 @@ export class PalestranteService {
       },
     });
   }
+
+  /**
+   * Create multiple palestrantes in batch
+   * Checks for existing email and links to event if already exists
+   */
+  async createBatch(palestrantes: PalestranteDTO[], fk_evento: number) {
+    const results = {
+      created: [] as any[],
+      linked: [] as any[],
+      errors: [] as { nome: string; email: string; error: string }[]
+    };
+
+    for (const palestrante of palestrantes) {
+      try {
+        // Add the event to the palestrante data
+        const dataWithEvento = {
+          ...palestrante,
+          eventos: [fk_evento]
+        };
+
+        // Check if already exists
+        const existing = await this.prisma.palestrante.findFirst({
+          where: { email: palestrante.email }
+        });
+
+        if (existing) {
+          // Link to event if not already linked
+          const linkExists = await this.prisma.palestrante_evento.findFirst({
+            where: {
+              fk_palestrante: existing.id_palestrante,
+              fk_evento: fk_evento
+            }
+          });
+
+          if (!linkExists) {
+            await this.prisma.palestrante_evento.create({
+              data: {
+                fk_palestrante: existing.id_palestrante,
+                fk_evento: fk_evento
+              }
+            });
+          }
+          results.linked.push(existing);
+        } else {
+          // Create new palestrante
+          const created = await this.create(dataWithEvento);
+          results.created.push(created);
+        }
+      } catch (error) {
+        results.errors.push({
+          nome: palestrante.nome,
+          email: palestrante.email,
+          error: error.message || 'Erro desconhecido'
+        });
+      }
+    }
+
+    return results;
+  }
 }
