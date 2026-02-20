@@ -50,6 +50,16 @@ export class AtividadeController {
 
 
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1, 3)
+  @Post(':id/inscrever-participantes')
+  inscreverParticipantes(
+    @Param('id') id: string,
+    @Body() data: { emails: string[] },
+  ) {
+    return this.atividadeService.inscreverParticipantesPorEmail(Number(id), data.emails);
+  }
+
   @Get(':id/participantes')
   findByIdWithParticipants(@Param('id') id: string) {
     return this.atividadeService.findByIdWithParticipants(Number(id));

@@ -289,4 +289,85 @@ export class AtividadeService {
 
     return results;
   }
+
+  /**
+   * Enroll participants by email into all sessions of an activity.
+   * For each email: find user → find participante → create data_atividade_participante for each session.
+   */
+  async inscreverParticipantesPorEmail(id_atividade: number, emails: string[]) {
+    const results = {
+      success: [] as { email: string; nome: string }[],
+      errors: [] as { email: string; error: string }[],
+    };
+
+    // Get all sessions for this activity
+    const sessions = await this.prisma.data_atividade.findMany({
+      where: { fk_atividade: id_atividade },
+      select: { id_data_atividade: true },
+    });
+
+    if (sessions.length === 0) {
+      throw new Error('Atividade não possui sessões cadastradas.');
+    }
+
+    for (const email of emails) {
+      try {
+        const trimmedEmail = email.trim().toLowerCase();
+        if (!trimmedEmail) continue;
+
+        // 1. Find user by email
+        const usuario = await this.prisma.usuario.findUnique({
+          where: { email: trimmedEmail },
+        });
+
+        if (!usuario) {
+          results.errors.push({ email: trimmedEmail, error: 'Usuário não encontrado' });
+          continue;
+        }
+
+        // 2. Find participante record
+        const participante = await this.prisma.participante.findFirst({
+          where: { fk_usuario: usuario.id_usuario },
+        });
+
+        if (!participante) {
+          results.errors.push({ email: trimmedEmail, error: 'Registro de participante não encontrado' });
+          continue;
+        }
+
+        // 3. Enroll in all sessions
+        let enrolled = false;
+        for (const session of sessions) {
+          const exists = await this.prisma.data_atividade_participante.findUnique({
+            where: {
+              fk_data_atividade_fk_participante: {
+                fk_data_atividade: session.id_data_atividade,
+                fk_participante: participante.id_participante,
+              },
+            },
+          });
+
+          if (!exists) {
+            await this.prisma.data_atividade_participante.create({
+              data: {
+                fk_data_atividade: session.id_data_atividade,
+                fk_participante: participante.id_participante,
+              },
+            });
+            enrolled = true;
+          }
+        }
+
+        if (enrolled) {
+          results.success.push({ email: trimmedEmail, nome: usuario.nome });
+        } else {
+          results.errors.push({ email: trimmedEmail, error: 'Já inscrito em todas as sessões' });
+        }
+      } catch (error) {
+        results.errors.push({ email, error: error.message || 'Erro desconhecido' });
+      }
+    }
+
+    return results;
+  }
 }
