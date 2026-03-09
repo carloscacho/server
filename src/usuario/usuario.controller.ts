@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
-import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO, UpdateUsuarioDTO } from './dto/usuario.dto';
+import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO, UpdateUsuarioDTO, RegisterAndSubscribeDTO } from './dto/usuario.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -92,5 +92,21 @@ export class UsuarioController {
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async testeCpf(@Body() data: TesteCpfDTO) {
     return this.usuarioService.testeCpf(data.cpf);
+  }
+
+  // Verificar status de inscrição em um evento
+  @Get('check-registration/:cpf/evento/:id_evento')
+  async checkRegistration(
+    @Param('cpf') cpf: string,
+    @Param('id_evento', ParseIntPipe) id_evento: number,
+  ) {
+    return this.usuarioService.checkRegistration(cpf, id_evento);
+  }
+
+  // Fluxo completo de cadastro e inscrição
+  @Post('register-and-subscribe')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async registerAndSubscribe(@Body() data: RegisterAndSubscribeDTO) {
+    return this.usuarioService.registerAndSubscribe(data);
   }
 }

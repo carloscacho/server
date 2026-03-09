@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
-import { UsuarioDTO, AlterarSenhaDTO, UpdateUsuarioDTO } from './dto/usuario.dto';
+import { UsuarioDTO, AlterarSenhaDTO, UpdateUsuarioDTO, RegisterAndSubscribeDTO } from './dto/usuario.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -103,6 +103,121 @@ export class UsuarioService {
     }
 
     return { message: 'CPF disponível para cadastro', status: 'success' };
+  }
+
+  // Checar registro do usuário no evento
+  async checkRegistration(cpf: string, id_evento: number) {
+    const user = await this.prisma.usuario.findUnique({
+      where: { cpf },
+      include: {
+        participante: {
+          include: {
+            evento_participante: {
+              where: { fk_evento: id_evento },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return { status: 'not_found', message: 'Usuário não encontrado.' };
+    }
+
+    const participante = user.participante[0];
+    if (participante && participante.evento_participante.length > 0) {
+      return { status: 'already_registered', message: 'Usuário já está inscrito neste evento.' };
+    }
+
+    const { senha, ...userData } = user;
+    return { status: 'exists_not_registered', user: userData };
+  }
+
+  // Completo: Registrar/Atualizar e Inscrever
+  async registerAndSubscribe(data: RegisterAndSubscribeDTO) {
+    let user: any = await this.prisma.usuario.findUnique({
+      where: { cpf: data.cpf },
+      include: { participante: true }
+    });
+
+    if (user) {
+      // Usuário existente - Exige senhaAtual
+      if (!data.senhaAtual) {
+        throw new UnauthorizedException('Senha atual é obrigatória para confirmar a atualização de dados.');
+      }
+      const senhaValida = await bcrypt.compare(data.senhaAtual, user.senha);
+      if (!senhaValida) {
+        throw new UnauthorizedException('Senha atual incorreta.');
+      }
+
+      // Atualiza os dados
+      // @ts-ignore
+      user = await this.prisma.usuario.update({
+        where: { id_usuario: user.id_usuario },
+        data: {
+          nome: data.nome,
+          email: data.email,
+          tipo: data.tipo,
+          ra: data.ra || null,
+          siape: data.siape || null,
+          instituicao: data.instituicao || null,
+        },
+        include: { participante: true }
+      });
+    } else {
+      // Usuário novo - Exige senha
+      if (!data.senha) {
+        throw new BadRequestException('A senha é obrigatória para novos cadastros.');
+      }
+      const emailExists = await this.prisma.usuario.findUnique({ where: { email: data.email } });
+      if (emailExists) {
+        throw new BadRequestException('E-MAIL já cadastrado por outro usuário.');
+      }
+      const hashedPassword = await bcrypt.hash(data.senha, 10);
+      // @ts-ignore
+      user = await this.prisma.usuario.create({
+        data: {
+          nome: data.nome,
+          cpf: data.cpf,
+          email: data.email,
+          senha: hashedPassword,
+          tipo: data.tipo,
+          ra: data.ra || null,
+          siape: data.siape || null,
+          instituicao: data.instituicao || null,
+        },
+        include: { participante: true }
+      });
+    }
+
+    // Garante que existe participante
+    let id_participante: number;
+    if (user!.participante && user!.participante.length > 0) {
+      id_participante = user!.participante[0].id_participante;
+    } else {
+      const part = await this.prisma.participante.create({
+        data: { fk_usuario: user!.id_usuario }
+      });
+      id_participante = part.id_participante;
+    }
+
+    // Inscreve no evento (ignora erro se já inscrito)
+    try {
+      await this.prisma.evento_participante.create({
+        data: {
+          fk_evento: data.id_evento,
+          fk_participante: id_participante
+        }
+      });
+    } catch (e) {
+      if (e.code === 'P2002') {
+        // Já inscrito, ignora
+      } else {
+        throw e;
+      }
+    }
+
+    return { message: 'Inscrição realizada com sucesso!', user: this.removePassword(user) };
   }
 
   // Alterar Senha
