@@ -97,6 +97,32 @@ export class PrismaUsuarioRepository implements IUsuarioRepository {
         });
     }
 
+    async updateResetToken(id: number, token: string | null, expires: Date | null): Promise<void> {
+        await this.prisma.usuario.update({
+            where: { id_usuario: id },
+            data: { reset_token: token, reset_token_expires: expires },
+        });
+    }
+
+    async findByResetToken(token: string): Promise<Usuario | null> {
+        const data = await this.prisma.usuario.findFirst({
+            where: { reset_token: token, reset_token_expires: { gt: new Date() } },
+        });
+
+        if (!data) return null;
+
+        return Usuario.create(data.id_usuario, {
+            nome: data.nome,
+            email: data.email,
+            cpf: data.cpf,
+            senha: data.senha,
+            tipo: data.tipo,
+            comunidade: data.comunidade,
+            instituicao: data.instituicao,
+            ra: data.ra,
+        });
+    }
+
     async createParticipante(userId: number): Promise<void> {
         await this.prisma.participante.create({
             data: { fk_usuario: userId },

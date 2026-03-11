@@ -161,16 +161,18 @@ model turno {
 }
 
 model usuario {
-  id_usuario   Int            @id @default(autoincrement()) @db.UnsignedInt
-  nome         String         @db.VarChar(70)
-  cpf          String         @unique(map: "cpf_UNIQUE") @db.Char(11)
-  email        String         @unique(map: "email_UNIQUE") @db.VarChar(100)
-  senha        String         @db.VarChar(255)
-  ra           Int?           @db.UnsignedMediumInt
-  tipo         Int?           @db.TinyInt
-  modificado   DateTime?      @default(now()) @db.Timestamp(0)
-  comunidade   String?        @db.VarChar(70)
-  instituicao  String?        @db.VarChar(70)
-  siape        String?        @db.VarChar(20)
-  participante participante[]
+  id_usuario          Int            @id @default(autoincrement()) @db.UnsignedInt
+  nome                String         @db.VarChar(70)
+  cpf                 String         @unique(map: "cpf_UNIQUE") @db.Char(11)
+  email               String         @unique(map: "email_UNIQUE") @db.VarChar(100)
+  senha               String         @db.VarChar(255)
+  ra                  Int?           @db.UnsignedMediumInt
+  tipo                Int?           @db.TinyInt
+  modificado          DateTime?      @default(now()) @db.Timestamp(0)
+  comunidade          String?        @db.VarChar(70)
+  instituicao         String?        @db.VarChar(70)
+  siape               String?        @db.VarChar(20)
+  reset_token         String?        @db.VarChar(255)
+  reset_token_expires DateTime?      @db.DateTime(0)
+  participante        participante[]
 }

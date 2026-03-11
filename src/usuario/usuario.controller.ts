@@ -19,12 +19,17 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { ChangePasswordUseCase } from './application/use-cases/change-password.use-case';
+import { RequestPasswordResetUseCase } from './application/use-cases/request-password-reset.use-case';
+import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
+import { RequestPasswordResetDto, ResetPasswordDto } from './dto/password-reset.dto';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(
     private readonly usuarioService: UsuarioService,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
+    private readonly requestPasswordResetUseCase: RequestPasswordResetUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) { }
 
   // Cadastrar Usuário
@@ -108,5 +113,21 @@ export class UsuarioController {
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async registerAndSubscribe(@Body() data: RegisterAndSubscribeDTO) {
     return this.usuarioService.registerAndSubscribe(data);
+  }
+
+  // Solicitar recuperação de senha
+  @Post('request-password-reset')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async requestPasswordReset(@Body() data: RequestPasswordResetDto) {
+    await this.requestPasswordResetUseCase.execute(data.cpfOrEmail, data.resetUrlPrefix);
+    return { message: 'Se os dados estiverem corretos, um e-mail de recuperação será enviado.' };
+  }
+
+  // Redefinir senha com token
+  @Post('reset-password')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async resetPassword(@Body() data: ResetPasswordDto) {
+    await this.resetPasswordUseCase.execute(data.token, data.newPassword);
+    return { message: 'Senha redefinida com sucesso.' };
   }
 }

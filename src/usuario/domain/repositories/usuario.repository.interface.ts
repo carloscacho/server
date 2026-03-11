@@ -11,6 +11,8 @@ export interface IUsuarioRepository {
     create(usuario: Usuario): Promise<Usuario>;
     updatePassword(id: number, hashedPassword: string): Promise<void>;
     createParticipante(userId: number): Promise<void>;
+    updateResetToken(id: number, token: string | null, expires: Date | null): Promise<void>;
+    findByResetToken(token: string): Promise<Usuario | null>;
 }
 
 export const USUARIO_REPOSITORY = Symbol('USUARIO_REPOSITORY');
