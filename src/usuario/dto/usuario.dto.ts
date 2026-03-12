@@ -27,7 +27,7 @@ export class UsuarioDTO {
 
   @IsOptional()
   @IsInt()
-  tipo?: number;
+  vinculo?: number;
 
   @IsNotEmpty()
   @IsString()
@@ -91,7 +91,7 @@ export class RegisterAndSubscribeDTO {
 
   @IsNotEmpty()
   @IsInt()
-  tipo: number;
+  vinculo: number;
 
   @IsOptional()
   @IsInt()

@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsNumber, IsDateString, IsNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
 export class EventoDTO {
   @IsOptional()
@@ -46,4 +46,12 @@ export class EventoDTO {
   @IsOptional()
   @IsString()
   base_url?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'null' || value === null) return null;
+    return Number(value);
+  })
+  fk_usuario_responsavel?: number | null;
 }

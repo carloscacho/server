@@ -20,11 +20,20 @@ export class EventoService {
   }
 
   async findAll() {
-    return this.prisma.evento.findMany();
+    return this.prisma.evento.findMany({
+      include: {
+        usuario_responsavel: true
+      }
+    });
   }
 
   async findById(id_evento: number) {
-    return this.prisma.evento.findUnique({ where: { id_evento } });
+    return this.prisma.evento.findUnique({
+      where: { id_evento },
+      include: {
+        usuario_responsavel: true
+      }
+    });
   }
 
   async findBySlug(slug: string) {
@@ -33,7 +42,8 @@ export class EventoService {
       include: {
         _count: {
           select: { atividade: true }
-        }
+        },
+        usuario_responsavel: true
       }
     });
   }

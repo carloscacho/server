@@ -20,8 +20,8 @@ export class UsuarioService {
   // Cadastrar Usuário
   async create(data: UsuarioDTO) {
     try {
-      // O 'tipo' é extraído do 'data' para ser ignorado, garantindo que o valor fixo 2 seja sempre usado.
-      const { senha, cpf, email, tipo, ...rest } = data;
+      // O 'vinculo' é extraído para salvar. O 'tipo' (papel do sistema) é fixo como 2.
+      const { senha, cpf, email, vinculo, ...rest } = data;
 
       // Verificar se CPF ou email já existem
       const cpfExists = await this.prisma.usuario.findUnique({
@@ -46,6 +46,7 @@ export class UsuarioService {
           email,
           senha: hashedPassword,
           tipo: 2, // O tipo de um novo usuário é sempre 2 (participante).
+          vinculo: vinculo || null,
           comunidade: rest.comunidade || null,
           instituicao: rest.instituicao || null,
           ra: rest.ra || null,
@@ -81,7 +82,7 @@ export class UsuarioService {
       data: {
         ...rest,
         ...(hashedPassword && { senha: hashedPassword }),
-        tipo: rest.tipo || null, // Tratar campos opcionais
+        vinculo: rest.vinculo || null, // Tratar campos opcionais
         comunidade: rest.comunidade || null,
         instituicao: rest.instituicao || null,
         ra: rest.ra || null,
@@ -157,7 +158,7 @@ export class UsuarioService {
         data: {
           nome: data.nome,
           email: data.email,
-          tipo: data.tipo,
+          vinculo: data.vinculo,
           ra: data.ra || null,
           siape: data.siape || null,
           instituicao: data.instituicao || null,
@@ -181,7 +182,8 @@ export class UsuarioService {
           cpf: data.cpf,
           email: data.email,
           senha: hashedPassword,
-          tipo: data.tipo,
+          tipo: 2, // papel do sistema base
+          vinculo: data.vinculo,
           ra: data.ra || null,
           siape: data.siape || null,
           instituicao: data.instituicao || null,

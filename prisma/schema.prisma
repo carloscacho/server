@@ -75,10 +75,12 @@ model evento {
   banner              String?               @db.VarChar(255)
   cor_primaria        String?               @db.VarChar(20)
   cor_secundaria      String?               @db.VarChar(20)
-  base_url            String?               @db.VarChar(255)
-  atividade           atividade[]
-  evento_participante evento_participante[]
-  palestrante_evento  palestrante_evento[]
+  base_url             String?               @db.VarChar(255)
+  fk_usuario_responsavel Int?                  @db.UnsignedInt
+  atividade            atividade[]
+  evento_participante  evento_participante[]
+  palestrante_evento   palestrante_evento[]
+  usuario_responsavel  usuario?              @relation("EventoResponsavel", fields: [fk_usuario_responsavel], references: [id_usuario], onDelete: SetNull, onUpdate: Cascade)
 }
 
 model evento_participante {
@@ -168,6 +170,7 @@ model usuario {
   senha               String         @db.VarChar(255)
   ra                  Int?           @db.UnsignedMediumInt
   tipo                Int?           @db.TinyInt
+  vinculo             Int?           @db.TinyInt
   modificado          DateTime?      @default(now()) @db.Timestamp(0)
   comunidade          String?        @db.VarChar(70)
   instituicao         String?        @db.VarChar(70)
@@ -175,4 +178,5 @@ model usuario {
   reset_token         String?        @db.VarChar(255)
   reset_token_expires DateTime?      @db.DateTime(0)
   participante        participante[]
+  eventos_responsavel evento[]       @relation("EventoResponsavel")
 }
