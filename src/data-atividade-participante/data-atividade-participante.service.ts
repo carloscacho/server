@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { DataAtividadeParticipanteDTO } from './dto/data-atividade-participante.dto';
 
@@ -118,15 +118,22 @@ export class DataAtividadeParticipanteService {
       presenca: typeof data.presenca === 'boolean' ? (data.presenca ? 1 : 0) : data.presenca,
       data_hora: new Date()
     };
-    return this.prisma.data_atividade_participante.update({
-      where: {
-        fk_data_atividade_fk_participante: {
-          fk_data_atividade,
-          fk_participante,
+    try {
+      return await this.prisma.data_atividade_participante.update({
+        where: {
+          fk_data_atividade_fk_participante: {
+            fk_data_atividade,
+            fk_participante,
+          },
         },
-      },
-      data: prismaData,
-    });
+        data: prismaData,
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Participante não inscrito nesta atividade.');
+      }
+      throw error;
+    }
   }
 
   async delete(fk_data_atividade: number, fk_participante: number) {
