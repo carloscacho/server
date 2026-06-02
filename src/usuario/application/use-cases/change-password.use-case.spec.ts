@@ -16,6 +16,8 @@ describe('ChangePasswordUseCase', () => {
             create: jest.fn(),
             updatePassword: jest.fn(),
             createParticipante: jest.fn(),
+            updateResetToken: jest.fn(),
+            findByResetToken: jest.fn(),
         };
 
         useCase = new ChangePasswordUseCase(mockRepository);
