@@ -16,6 +16,7 @@ describe('EventoController', () => {
     findBySlug: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    getReportData: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -165,6 +166,27 @@ describe('EventoController', () => {
 
       expect(service.delete).toHaveBeenCalledWith(15);
       expect(result).toEqual({ success: true });
+    });
+  });
+
+  describe('getReport', () => {
+    it('should return report data for an event', async () => {
+      const mockReq = {
+        user: {
+          id_usuario: 42,
+          tipo: 4,
+        },
+      };
+      const report = {
+        evento: { id_evento: 1, nome: 'Tech week' },
+        atividades: [],
+      };
+      mockEventoService.getReportData.mockResolvedValue(report);
+
+      const result = await controller.getReport('1', mockReq);
+
+      expect(service.getReportData).toHaveBeenCalledWith(1, 42, 4);
+      expect(result).toEqual(report);
     });
   });
 });

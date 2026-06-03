@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PalestranteService } from './palestrante.service';
 import { PalestranteDTO } from './dto/palestrante.dto';
@@ -19,17 +20,21 @@ export class PalestranteController {
   constructor(private readonly palestranteService: PalestranteService) { }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Post()
-  create(@Body() data: PalestranteDTO) {
-    return this.palestranteService.create(data);
+  create(@Body() data: PalestranteDTO, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.palestranteService.create(data, userId, userRole);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Post('batch')
-  createBatch(@Body() data: { palestrantes: PalestranteDTO[], fk_evento: number }) {
-    return this.palestranteService.createBatch(data.palestrantes, data.fk_evento);
+  createBatch(@Body() data: { palestrantes: PalestranteDTO[], fk_evento: number }, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.palestranteService.createBatch(data.palestrantes, data.fk_evento, userId, userRole);
   }
 
   @Get()
@@ -49,16 +54,20 @@ export class PalestranteController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: PalestranteDTO) {
-    return this.palestranteService.update(Number(id), data);
+  update(@Param('id') id: string, @Body() data: PalestranteDTO, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.palestranteService.update(Number(id), data, userId, userRole);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.palestranteService.delete(Number(id));
+  delete(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.palestranteService.delete(Number(id), userId, userRole);
   }
 }

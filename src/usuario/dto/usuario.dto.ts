@@ -5,6 +5,7 @@ import {
   MinLength,
   IsInt,
   IsOptional,
+  IsArray,
 } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 
@@ -104,6 +105,23 @@ export class RegisterAndSubscribeDTO {
   @IsOptional()
   @IsString()
   instituicao?: string;
+
+  @IsOptional()
+  @IsInt()
+  fk_turma?: number;
+
+  @IsOptional()
+  @IsInt()
+  fk_turno?: number;
+
+  @IsOptional()
+  @IsInt()
+  semestre?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  fk_turmas?: number[];
 
   @IsNotEmpty()
   @IsInt()

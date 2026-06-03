@@ -77,10 +77,15 @@ model evento {
   cor_secundaria      String?               @db.VarChar(20)
   base_url             String?               @db.VarChar(255)
   fk_usuario_responsavel Int?                  @db.UnsignedInt
+  fk_evento_pai       Int?                  @db.UnsignedSmallInt
   atividade            atividade[]
   evento_participante  evento_participante[]
   palestrante_evento   palestrante_evento[]
   usuario_responsavel  usuario?              @relation("EventoResponsavel", fields: [fk_usuario_responsavel], references: [id_usuario], onDelete: SetNull, onUpdate: Cascade)
+  evento_pai          evento?               @relation("EventosFilhos", fields: [fk_evento_pai], references: [id_evento], onDelete: SetNull, onUpdate: Cascade, map: "fk_evento_evento_pai")
+  eventos_filhos      evento[]              @relation("EventosFilhos")
+
+  @@index([fk_evento_pai], map: "fk_evento_evento_pai_idx")
 }
 
 model evento_participante {
@@ -135,6 +140,7 @@ model participante {
   certificado                 certificado?
   data_atividade_participante data_atividade_participante[]
   evento_participante         evento_participante[]
+  participante_turma          participante_turma[]
   turma                       turma?                        @relation(fields: [fk_turma], references: [id_turma], onDelete: NoAction, onUpdate: NoAction, map: "fk_participante_turma1")
   turno                       turno?                        @relation(fields: [fk_turno], references: [id_turno], onDelete: NoAction, onUpdate: NoAction, map: "fk_participante_turno1")
   usuario                     usuario                       @relation(fields: [fk_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_participante_usuario1")
@@ -154,6 +160,7 @@ model turma {
   id_turma     Int            @id @default(autoincrement()) @db.UnsignedTinyInt
   nome         String         @unique(map: "nome_UNIQUE") @db.VarChar(25)
   participante participante[]
+  participante_turma participante_turma[]
 }
 
 model turno {
@@ -179,4 +186,15 @@ model usuario {
   reset_token_expires DateTime?      @db.DateTime(0)
   participante        participante[]
   eventos_responsavel evento[]       @relation("EventoResponsavel")
+}
+
+model participante_turma {
+  fk_participante Int          @db.UnsignedInt
+  fk_turma        Int          @db.UnsignedTinyInt
+  participante    participante @relation(fields: [fk_participante], references: [id_participante], onDelete: Cascade)
+  turma           turma        @relation(fields: [fk_turma], references: [id_turma], onDelete: Cascade)
+
+  @@id([fk_participante, fk_turma])
+  @@index([fk_participante])
+  @@index([fk_turma])
 }

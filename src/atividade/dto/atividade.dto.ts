@@ -38,6 +38,14 @@ export class AtividadeDTO {
   palestrantes?: number[];
 
   @IsOptional()
+  @IsArray()
+  palestrantes_detalhes?: {
+    nome: string;
+    email: string;
+    instituicao?: string;
+  }[];
+
+  @IsOptional()
   @IsObject()
   data_atividade?: {
     data: string;

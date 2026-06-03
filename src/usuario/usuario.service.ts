@@ -116,6 +116,7 @@ export class UsuarioService {
             evento_participante: {
               where: { fk_evento: id_evento },
             },
+            participante_turma: true,
           },
         },
       },
@@ -196,11 +197,45 @@ export class UsuarioService {
     let id_participante: number;
     if (user!.participante && user!.participante.length > 0) {
       id_participante = user!.participante[0].id_participante;
+      await this.prisma.participante.update({
+        where: { id_participante },
+        data: {
+          fk_turma: data.vinculo === 1 ? (data.fk_turma !== undefined ? data.fk_turma : user!.participante[0].fk_turma) : null,
+          fk_turno: data.vinculo === 1 ? (data.fk_turno !== undefined ? data.fk_turno : user!.participante[0].fk_turno) : null,
+          semestre: data.vinculo === 1 ? (data.semestre !== undefined ? data.semestre : user!.participante[0].semestre) : null,
+        }
+      });
     } else {
       const part = await this.prisma.participante.create({
-        data: { fk_usuario: user!.id_usuario }
+        data: {
+          fk_usuario: user!.id_usuario,
+          fk_turma: data.vinculo === 1 ? data.fk_turma || null : null,
+          fk_turno: data.vinculo === 1 ? data.fk_turno || null : null,
+          semestre: data.vinculo === 1 ? data.semestre || null : null,
+        }
       });
       id_participante = part.id_participante;
+    }
+
+    // Gerencia múltiplos cursos (turmas) para professores (vinculo = 2)
+    if (data.vinculo === 2) {
+      if (data.fk_turmas !== undefined) {
+        await this.prisma.participante_turma.deleteMany({
+          where: { fk_participante: id_participante }
+        });
+        if (data.fk_turmas.length > 0) {
+          await this.prisma.participante_turma.createMany({
+            data: data.fk_turmas.map(turmaId => ({
+              fk_participante: id_participante,
+              fk_turma: Number(turmaId)
+            }))
+          });
+        }
+      }
+    } else {
+      await this.prisma.participante_turma.deleteMany({
+        where: { fk_participante: id_participante }
+      });
     }
 
     // Inscreve no evento (ignora erro se já inscrito)
@@ -216,6 +251,30 @@ export class UsuarioService {
         // Já inscrito, ignora
       } else {
         throw e;
+      }
+    }
+
+    // Auto subscribe to all sub-events
+    const subEvents = await this.prisma.evento.findMany({
+      where: { fk_evento_pai: data.id_evento }
+    });
+    for (const sub of subEvents) {
+      try {
+        await this.prisma.evento_participante.upsert({
+          where: {
+            fk_evento_fk_participante: {
+              fk_evento: sub.id_evento,
+              fk_participante: id_participante
+            }
+          },
+          update: {},
+          create: {
+            fk_evento: sub.id_evento,
+            fk_participante: id_participante
+          }
+        });
+      } catch (e) {
+        // Ignore potential unique key or relation error on auto sync
       }
     }
 

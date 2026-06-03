@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { AtividadeDTO } from './dto/atividade.dto';
 
@@ -6,12 +6,47 @@ import { AtividadeDTO } from './dto/atividade.dto';
 export class AtividadeService {
   constructor(private prisma: PrismaService) { }
 
-  async create(data: AtividadeDTO) {
-    const { palestrantes, data_atividade, ...rest } = data;
+  async create(data: AtividadeDTO, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      const event = await this.prisma.evento.findUnique({
+        where: { id_evento: data.fk_evento }
+      });
+      if (!event || event.fk_usuario_responsavel !== userId) {
+        throw new ForbiddenException('Acesso negado: você não é o responsável por este evento.');
+      }
+    }
+    const { palestrantes, palestrantes_detalhes, data_atividade, ...rest } = data;
+
+    const allPalestranteIds = [...(palestrantes || [])];
+
+    // Process new/existing speakers from details
+    if (palestrantes_detalhes && palestrantes_detalhes.length > 0) {
+      for (const d of palestrantes_detalhes) {
+        if (!d.email || !d.nome) continue;
+        const emailLower = d.email.trim().toLowerCase();
+        let p = await this.prisma.palestrante.findFirst({
+          where: { email: emailLower }
+        });
+
+        if (!p) {
+          p = await this.prisma.palestrante.create({
+            data: {
+              nome: d.nome.trim(),
+              email: emailLower,
+              instituicao: d.instituicao ? d.instituicao.trim() : null
+            }
+          });
+        }
+        
+        if (p && !allPalestranteIds.includes(p.id_palestrante)) {
+          allPalestranteIds.push(p.id_palestrante);
+        }
+      }
+    }
 
     // Ensure all speakers are linked to the event
-    if (palestrantes && palestrantes.length > 0) {
-      for (const idPalestrante of palestrantes) {
+    if (allPalestranteIds.length > 0) {
+      for (const idPalestrante of allPalestranteIds) {
         const linkExists = await this.prisma.palestrante_evento.findUnique({
           where: {
             fk_palestrante_fk_evento: {
@@ -60,8 +95,8 @@ export class AtividadeService {
     return this.prisma.atividade.create({
       data: {
         ...rest,
-        palestrante_atividade: palestrantes && palestrantes.length > 0 ? {
-          create: palestrantes.map(id => ({ fk_palestrante: id }))
+        palestrante_atividade: allPalestranteIds.length > 0 ? {
+          create: allPalestranteIds.map(id => ({ fk_palestrante: id }))
         } : undefined,
         data_atividade: dataAtividadeCreate
       }
@@ -127,7 +162,21 @@ export class AtividadeService {
     return this.prisma.atividade.findUnique({ where: { id_atividade } });
   }
 
-  async update(id_atividade: number, data: AtividadeDTO) {
+  async update(id_atividade: number, data: AtividadeDTO, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      const activity = await this.prisma.atividade.findUnique({
+        where: { id_atividade }
+      });
+      if (!activity) {
+        throw new NotFoundException('Atividade não encontrada');
+      }
+      const event = await this.prisma.evento.findUnique({
+        where: { id_evento: activity.fk_evento }
+      });
+      if (!event || event.fk_usuario_responsavel !== userId) {
+        throw new ForbiddenException('Acesso negado: você não é o responsável por este evento.');
+      }
+    }
     const { palestrantes, data_atividade, ...rest } = data;
 
     // 1. Ensure all speakers are linked to the event
@@ -211,7 +260,21 @@ export class AtividadeService {
     });
   }
 
-  async delete(id_atividade: number) {
+  async delete(id_atividade: number, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      const activity = await this.prisma.atividade.findUnique({
+        where: { id_atividade }
+      });
+      if (!activity) {
+        throw new NotFoundException('Atividade não encontrada');
+      }
+      const event = await this.prisma.evento.findUnique({
+        where: { id_evento: activity.fk_evento }
+      });
+      if (!event || event.fk_usuario_responsavel !== userId) {
+        throw new ForbiddenException('Acesso negado: você não é o responsável por este evento.');
+      }
+    }
     return this.prisma.$transaction(async (prisma) => {
       // 1. Get IDs of data_atividade related to this activity
       const dataAtividades = await prisma.data_atividade.findMany({
@@ -269,7 +332,7 @@ export class AtividadeService {
    * Create multiple activities in batch
    * Returns success and error arrays for reporting
    */
-  async createBatch(atividades: AtividadeDTO[]) {
+  async createBatch(atividades: AtividadeDTO[], userId?: number, userRole?: number) {
     const results = {
       success: [] as any[],
       errors: [] as { nome: string; error: string }[]
@@ -277,7 +340,7 @@ export class AtividadeService {
 
     for (const atividade of atividades) {
       try {
-        const created = await this.create(atividade);
+        const created = await this.create(atividade, userId, userRole);
         results.success.push(created);
       } catch (error) {
         results.errors.push({

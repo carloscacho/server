@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AtividadeService } from './atividade.service';
 import { AtividadeDTO } from './dto/atividade.dto';
@@ -19,17 +20,21 @@ export class AtividadeController {
   constructor(private readonly atividadeService: AtividadeService) { }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Post()
-  create(@Body() data: AtividadeDTO) {
-    return this.atividadeService.create(data);
+  create(@Body() data: AtividadeDTO, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.atividadeService.create(data, userId, userRole);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Post('batch')
-  createBatch(@Body() data: { atividades: AtividadeDTO[] }) {
-    return this.atividadeService.createBatch(data.atividades);
+  createBatch(@Body() data: { atividades: AtividadeDTO[] }, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.atividadeService.createBatch(data.atividades, userId, userRole);
   }
 
   @Get()
@@ -74,16 +79,20 @@ export class AtividadeController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: AtividadeDTO) {
-    return this.atividadeService.update(Number(id), data);
+  update(@Param('id') id: string, @Body() data: AtividadeDTO, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.atividadeService.update(Number(id), data, userId, userRole);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(1)
+  @Roles(1, 4)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.atividadeService.delete(Number(id));
+  delete(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.atividadeService.delete(Number(id), userId, userRole);
   }
 }

@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { EventoService } from './evento.service';
@@ -63,6 +64,15 @@ export class EventoController {
     if (typeof data.ano === 'string') data.ano = parseInt(data.ano);
 
     return this.eventoService.update(Number(id), data);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1, 4)
+  @Get(':id/relatorio')
+  getReport(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.id_usuario;
+    const userRole = req.user.tipo;
+    return this.eventoService.getReportData(Number(id), userId, userRole);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

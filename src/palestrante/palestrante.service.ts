@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { PalestranteDTO } from './dto/palestrante.dto';
 
@@ -6,7 +6,17 @@ import { PalestranteDTO } from './dto/palestrante.dto';
 export class PalestranteService {
   constructor(private prisma: PrismaService) { }
 
-  async create(data: PalestranteDTO) {
+  async create(data: PalestranteDTO, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      if (data.eventos && data.eventos.length > 0) {
+        for (const evId of data.eventos) {
+          const event = await this.prisma.evento.findUnique({ where: { id_evento: evId } });
+          if (!event || event.fk_usuario_responsavel !== userId) {
+            throw new ForbiddenException('Acesso negado: você não é o responsável por este evento.');
+          }
+        }
+      }
+    }
     const { eventos, ...rest } = data;
 
     // Check if palestrante with this email already exists
@@ -78,7 +88,17 @@ export class PalestranteService {
     });
   }
 
-  async update(id_palestrante: number, data: PalestranteDTO) {
+  async update(id_palestrante: number, data: PalestranteDTO, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      if (data.eventos && data.eventos.length > 0) {
+        for (const evId of data.eventos) {
+          const event = await this.prisma.evento.findUnique({ where: { id_evento: evId } });
+          if (!event || event.fk_usuario_responsavel !== userId) {
+            throw new ForbiddenException('Acesso negado: você não é o responsável por este evento.');
+          }
+        }
+      }
+    }
     const { eventos, ...rest } = data;
 
     // First, delete existing relations if updating events
@@ -101,7 +121,18 @@ export class PalestranteService {
     });
   }
 
-  async delete(id_palestrante: number) {
+  async delete(id_palestrante: number, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      const links = await this.prisma.palestrante_evento.findMany({
+        where: { fk_palestrante: id_palestrante }
+      });
+      for (const link of links) {
+        const event = await this.prisma.evento.findUnique({ where: { id_evento: link.fk_evento } });
+        if (!event || event.fk_usuario_responsavel !== userId) {
+          throw new ForbiddenException('Acesso negado: você não é o responsável por um dos eventos deste palestrante.');
+        }
+      }
+    }
     try {
       return await this.prisma.palestrante.delete({ where: { id_palestrante } });
     } catch (error) {

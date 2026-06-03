@@ -54,4 +54,12 @@ export class EventoDTO {
     return Number(value);
   })
   fk_usuario_responsavel?: number | null;
+
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => {
+    if (value === '' || value === 'null' || value === null) return null;
+    return Number(value);
+  })
+  fk_evento_pai?: number | null;
 }

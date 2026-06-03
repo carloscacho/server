@@ -61,9 +61,9 @@ describe('AtividadeController', () => {
 
       mockAtividadeService.create.mockResolvedValue({ id_atividade: 10, ...dto });
 
-      const result = await controller.create(dto);
+      const result = await controller.create(dto, { user: { id_usuario: 1, tipo: 1 } });
 
-      expect(service.create).toHaveBeenCalledWith(dto);
+      expect(service.create).toHaveBeenCalledWith(dto, 1, 1);
       expect(result).toEqual({ id_atividade: 10, ...dto });
     });
   });
@@ -77,9 +77,9 @@ describe('AtividadeController', () => {
 
       mockAtividadeService.createBatch.mockResolvedValue({ count: 2 });
 
-      const result = await controller.createBatch({ atividades: activities });
+      const result = await controller.createBatch({ atividades: activities }, { user: { id_usuario: 1, tipo: 1 } });
 
-      expect(service.createBatch).toHaveBeenCalledWith(activities);
+      expect(service.createBatch).toHaveBeenCalledWith(activities, 1, 1);
       expect(result).toEqual({ count: 2 });
     });
   });
@@ -171,9 +171,9 @@ describe('AtividadeController', () => {
       const dto: AtividadeDTO = { nome: 'Atividade Modificada', fk_evento: 1 };
       mockAtividadeService.update.mockResolvedValue({ id_atividade: 20, ...dto });
 
-      const result = await controller.update('20', dto);
+      const result = await controller.update('20', dto, { user: { id_usuario: 1, tipo: 1 } });
 
-      expect(service.update).toHaveBeenCalledWith(20, dto);
+      expect(service.update).toHaveBeenCalledWith(20, dto, 1, 1);
       expect(result).toEqual({ id_atividade: 20, ...dto });
     });
   });
@@ -182,9 +182,9 @@ describe('AtividadeController', () => {
     it('should delete an activity by id', async () => {
       mockAtividadeService.delete.mockResolvedValue({ success: true });
 
-      const result = await controller.delete('30');
+      const result = await controller.delete('30', { user: { id_usuario: 1, tipo: 1 } });
 
-      expect(service.delete).toHaveBeenCalledWith(30);
+      expect(service.delete).toHaveBeenCalledWith(30, 1, 1);
       expect(result).toEqual({ success: true });
     });
   });

@@ -15,10 +15,10 @@ export class AdminAuxMiddleware implements NestMiddleware {
       throw new UnauthorizedException('Usuário não autenticado');
     }
 
-    if (user.tipo !== 1 && user.tipo !== 3) {
+    if (user.tipo !== 1 && user.tipo !== 3 && user.tipo !== 4) {
       throw new ForbiddenException(
         
-        'Acesso permitido apenas para administradores e auxiliares',
+        'Acesso permitido apenas para administradores, auxiliares e responsáveis',
       );
     }
 
