@@ -166,7 +166,14 @@ export class PalestranteService {
    * Create multiple palestrantes in batch
    * Checks for existing email and links to event if already exists
    */
-  async createBatch(palestrantes: PalestranteDTO[], fk_evento: number) {
+  async createBatch(palestrantes: PalestranteDTO[], fk_evento: number, userId?: number, userRole?: number) {
+    if (userRole === 4 && userId) {
+      const event = await this.prisma.evento.findUnique({ where: { id_evento: fk_evento } });
+      if (!event || event.fk_usuario_responsavel !== userId) {
+        throw new ForbiddenException('Acesso negado: você não é o responsável por este evento.');
+      }
+    }
+
     const results = {
       created: [] as any[],
       linked: [] as any[],
@@ -206,7 +213,7 @@ export class PalestranteService {
           results.linked.push(existing);
         } else {
           // Create new palestrante
-          const created = await this.create(dataWithEvento);
+          const created = await this.create(dataWithEvento, userId, userRole);
           results.created.push(created);
         }
       } catch (error) {
