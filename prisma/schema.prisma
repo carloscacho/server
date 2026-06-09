@@ -11,6 +11,7 @@ datasource db {
 model atividade {
   id_atividade           Int                     @id @default(autoincrement()) @db.UnsignedMediumInt
   nome                   String                  @db.VarChar(100)
+  tipo                   String?                 @db.VarChar(50)
   descricao              String?                 @db.VarChar(255)
   observacao             String?                 @db.VarChar(200)
   limite                 Int?                    @db.UnsignedSmallInt

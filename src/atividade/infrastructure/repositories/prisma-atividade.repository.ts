@@ -23,6 +23,7 @@ export class PrismaAtividadeRepository implements IAtividadeRepository {
 
         return Atividade.create(data.id_atividade, {
             nome: data.nome,
+            tipo: data.tipo,
             descricao: data.descricao,
             observacao: data.observacao,
             limite: data.limite,
@@ -48,6 +49,7 @@ export class PrismaAtividadeRepository implements IAtividadeRepository {
 
         return Atividade.create(data.id_atividade, {
             nome: data.nome,
+            tipo: data.tipo,
             descricao: data.descricao,
             observacao: data.observacao,
             limite: data.limite,
@@ -69,6 +71,7 @@ export class PrismaAtividadeRepository implements IAtividadeRepository {
         const created = await this.prisma.atividade.create({
             data: {
                 nome: data.nome,
+                tipo: data.tipo,
                 descricao: data.descricao,
                 observacao: data.observacao,
                 limite: data.limite,
@@ -92,6 +95,7 @@ export class PrismaAtividadeRepository implements IAtividadeRepository {
 
         return Atividade.create(created.id_atividade, {
             nome: created.nome,
+            tipo: created.tipo,
             descricao: created.descricao,
             observacao: created.observacao,
             limite: created.limite,
@@ -107,6 +111,7 @@ export class PrismaAtividadeRepository implements IAtividadeRepository {
             where: { id_atividade: id },
             data: {
                 nome: data.nome,
+                tipo: data.tipo,
                 descricao: data.descricao,
                 observacao: data.observacao,
                 limite: data.limite,
@@ -118,6 +123,7 @@ export class PrismaAtividadeRepository implements IAtividadeRepository {
 
         return Atividade.create(updated.id_atividade, {
             nome: updated.nome,
+            tipo: updated.tipo,
             descricao: updated.descricao,
             observacao: updated.observacao,
             limite: updated.limite,

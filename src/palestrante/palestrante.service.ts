@@ -71,6 +71,15 @@ export class PalestranteService {
             evento: true,
           },
         },
+        palestrante_atividade: {
+          include: {
+            atividade: {
+              include: {
+                data_atividade: true,
+              }
+            }
+          }
+        }
       },
     });
   }
@@ -84,6 +93,15 @@ export class PalestranteService {
             evento: true,
           },
         },
+        palestrante_atividade: {
+          include: {
+            atividade: {
+              include: {
+                data_atividade: true,
+              }
+            }
+          }
+        }
       },
     });
   }
@@ -158,6 +176,15 @@ export class PalestranteService {
             evento: true,
           },
         },
+        palestrante_atividade: {
+          include: {
+            atividade: {
+              include: {
+                data_atividade: true,
+              }
+            }
+          }
+        }
       },
     });
   }

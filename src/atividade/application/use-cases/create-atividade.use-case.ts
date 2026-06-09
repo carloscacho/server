@@ -10,6 +10,7 @@ import { DataAtividade } from '../../domain/entities/data-atividade.entity';
 
 export interface CreateAtividadeInput {
     nome: string;
+    tipo?: string;
     descricao?: string;
     observacao?: string;
     limite?: number;
@@ -50,6 +51,7 @@ export class CreateAtividadeUseCase
         // 2. Build create data
         const createData: CreateAtividadeData = {
             nome: input.nome,
+            tipo: input.tipo,
             descricao: input.descricao,
             observacao: input.observacao,
             limite: input.limite,

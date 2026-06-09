@@ -11,6 +11,10 @@ export class AtividadeDTO {
 
   @IsOptional()
   @IsString()
+  tipo?: string;
+
+  @IsOptional()
+  @IsString()
   descricao?: string;
 
   @IsOptional()

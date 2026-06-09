@@ -3,6 +3,7 @@ import { DataAtividadeProps } from '../entities/data-atividade.entity';
 
 export interface CreateAtividadeData {
     nome: string;
+    tipo?: string | null;
     descricao?: string | null;
     observacao?: string | null;
     limite?: number | null;

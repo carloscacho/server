@@ -10,6 +10,7 @@ import { DataAtividade } from '../../domain/entities/data-atividade.entity';
 export interface UpdateAtividadeInput {
     id: number;
     nome?: string;
+    tipo?: string;
     descricao?: string;
     observacao?: string;
     limite?: number;

@@ -26,6 +26,7 @@ describe('CreateAtividadeUseCase', () => {
         nome: 'Palestra de Abertura',
         fk_evento: 1,
         descricao: 'Palestra inaugural do evento',
+        tipo: 'Palestra',
     };
 
     it('should create an activity successfully', async () => {
@@ -42,7 +43,12 @@ describe('CreateAtividadeUseCase', () => {
         expect(result.id).toBe(1);
         expect(result.nome).toBe('Palestra de Abertura');
         expect(result.fk_evento).toBe(1);
-        expect(mockRepository.create).toHaveBeenCalled();
+        expect(mockRepository.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                tipo: 'Palestra',
+                descricao: 'Palestra inaugural do evento',
+            })
+        );
     });
 
     it('should create activity with speakers', async () => {

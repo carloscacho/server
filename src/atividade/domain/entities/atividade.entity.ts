@@ -3,6 +3,7 @@ import { DataAtividade, DataAtividadeProps } from './data-atividade.entity';
 
 export interface AtividadeProps {
     nome: string;
+    tipo?: string | null;
     descricao?: string | null;
     observacao?: string | null;
     limite?: number | null;
@@ -18,6 +19,7 @@ export interface AtividadeProps {
  */
 export class Atividade extends Entity<number> {
     public nome: string;
+    public tipo: string | null;
     public descricao: string | null;
     public observacao: string | null;
     public limite: number | null;
@@ -30,6 +32,7 @@ export class Atividade extends Entity<number> {
     private constructor(id: number, props: AtividadeProps) {
         super(id);
         this.nome = props.nome;
+        this.tipo = props.tipo ?? null;
         this.descricao = props.descricao ?? null;
         this.observacao = props.observacao ?? null;
         this.limite = props.limite ?? null;
@@ -64,6 +67,7 @@ export class Atividade extends Entity<number> {
         return {
             id: this.id,
             nome: this.nome,
+            tipo: this.tipo,
             descricao: this.descricao,
             observacao: this.observacao,
             limite: this.limite,
