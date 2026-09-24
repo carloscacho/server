@@ -357,4 +357,26 @@ export class UsuarioService {
 
     return user;
   }
+
+  async findByIdentifier(identifier: string, includePassword = false) {
+    const user = await this.prisma.usuario.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { cpf: identifier }
+        ]
+      },
+      include: { participante: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com identificador ${identifier} não encontrado`);
+    }
+
+    if (!includePassword) {
+      return this.removePassword(user);
+    }
+
+    return user;
+  }
 }
