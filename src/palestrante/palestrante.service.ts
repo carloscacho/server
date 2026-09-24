@@ -6,6 +6,12 @@ import { PalestranteDTO } from './dto/palestrante.dto';
 export class PalestranteService {
   constructor(private prisma: PrismaService) { }
 
+  private removeSensitiveData(palestrante: any) {
+    if (!palestrante) return palestrante;
+    const { email, ...rest } = palestrante;
+    return rest;
+  }
+
   async create(data: PalestranteDTO, userId?: number, userRole?: number) {
     if (userRole === 4 && userId) {
       if (data.eventos && data.eventos.length > 0) {
@@ -64,7 +70,7 @@ export class PalestranteService {
   }
 
   async findAll() {
-    return this.prisma.palestrante.findMany({
+    const palestrantes = await this.prisma.palestrante.findMany({
       include: {
         palestrante_evento: {
           include: {
@@ -82,10 +88,11 @@ export class PalestranteService {
         }
       },
     });
+    return palestrantes.map(p => this.removeSensitiveData(p));
   }
 
   async findById(id_palestrante: number) {
-    return this.prisma.palestrante.findUnique({
+    const palestrante = await this.prisma.palestrante.findUnique({
       where: { id_palestrante },
       include: {
         palestrante_evento: {
@@ -104,6 +111,7 @@ export class PalestranteService {
         }
       },
     });
+    return this.removeSensitiveData(palestrante);
   }
 
   async update(id_palestrante: number, data: PalestranteDTO, userId?: number, userRole?: number) {
@@ -162,7 +170,7 @@ export class PalestranteService {
   }
 
   async findByEventoId(id_evento: number) {
-    return this.prisma.palestrante.findMany({
+    const palestrantes = await this.prisma.palestrante.findMany({
       where: {
         palestrante_evento: {
           some: {
@@ -187,6 +195,7 @@ export class PalestranteService {
         }
       },
     });
+    return palestrantes.map(p => this.removeSensitiveData(p));
   }
 
   /**

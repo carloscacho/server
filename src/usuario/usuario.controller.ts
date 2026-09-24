@@ -11,6 +11,7 @@ import {
   Req,
   ParseIntPipe,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { UsuarioDTO, AlterarSenhaDTO, TesteCpfDTO, UpdateUsuarioDTO, RegisterAndSubscribeDTO } from './dto/usuario.dto';
@@ -41,6 +42,8 @@ export class UsuarioController {
     return this.usuarioService.create(data);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(1)
   @Get()
   findAll() {
     return this.usuarioService.findAll();
@@ -68,8 +71,13 @@ export class UsuarioController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const userLogado = req.user as any;
+    if (userLogado.tipo !== 1 && userLogado.id_usuario !== id) {
+      throw new ForbiddenException('Você não tem permissão para acessar os dados deste usuário.');
+    }
     return this.usuarioService.findById(id);
   }
 
