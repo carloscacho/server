@@ -185,6 +185,7 @@ model usuario {
   siape               String?        @db.VarChar(20)
   reset_token         String?        @db.VarChar(255)
   reset_token_expires DateTime?      @db.DateTime(0)
+  primeiro_acesso     Boolean        @default(true)
   participante        participante[]
   eventos_responsavel evento[]       @relation("EventoResponsavel")
 }
