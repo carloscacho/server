@@ -12,9 +12,9 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
 
-  // Habilita o CORS para permitir requisições apenas do frontend (localhost:3000)
+  // Habilita o CORS para permitir requisições do frontend
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

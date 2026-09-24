@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -27,6 +28,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
+    "@prisma/client": "5.22.0",
     "@types/nodemailer": "^7.0.11",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
@@ -47,18 +49,14 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
-    "@prisma/client": "5.22.0",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
     "@types/bcrypt": "^6.0.0",
     "@types/color-name": "^2.0.0",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "^5.0.0",
-    "@types/glob": "^9.0.0",
     "@types/http-proxy": "^1.17.16",
-    "@types/http-proxy-middleware": "^1.0.0",
     "@types/jest": "^29.5.14",
-    "@types/minimatch": "^6.0.0",
     "@types/minimist": "^1.2.5",
     "@types/multer": "^2.0.0",
     "@types/node": "^22.10.7",
@@ -69,7 +67,6 @@
     "@types/supertest": "^6.0.2",
     "@types/swagger-ui": "^5.21.1",
     "@types/uglify-js": "^3.17.5",
-    "@types/webpack-dev-server": "^4.7.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
@@ -102,16 +99,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "compilerOptions": {
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "types": [
-      "node",
-      "jest",
-      "glob",
-      "minimatch"
-    ]
   }
 }

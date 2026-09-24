@@ -33,7 +33,7 @@ export class AuthService {
 
     // Refresh token: 5 dias
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRATION || '5d',
+      expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '5d') as any,
     });
 
     return {

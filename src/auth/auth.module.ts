@@ -13,7 +13,7 @@ import { LocalStrategy } from './local.strategy'; // Importar a estratégia loca
     PassportModule,
     JwtModule.register({
       secret: process.env.SECRET_KEY || 'default_secret', // Use uma variável de ambiente
-      signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRATION || '30h' }, // Access token: 30 horas
+      signOptions: { expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '30h') as any }, // Access token: 30 horas
     }),
   ],
   providers: [AuthService, JwtStrategy, LocalStrategy], // Registrar a estratégia local
