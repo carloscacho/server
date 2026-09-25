@@ -1,7 +1,12 @@
-import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { EventoParticipanteService } from './evento-participante.service';
 import { EventoParticipanteDTO } from './dto/evento-participante.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(1)
 @Controller('evento-participante')
 export class EventoParticipanteController {
   constructor(private readonly service: EventoParticipanteService) {}

@@ -143,27 +143,37 @@ export class UsuarioService {
     });
 
     if (user) {
-      // Usuário existente - Exige senhaAtual
-      if (!data.senhaAtual) {
-        throw new UnauthorizedException('Senha atual é obrigatória para confirmar a atualização de dados.');
-      }
-      const senhaValida = await bcrypt.compare(data.senhaAtual, user.senha);
-      if (!senhaValida) {
-        throw new UnauthorizedException('Senha atual incorreta.');
+      let updateData: any = {
+        nome: data.nome,
+        email: data.email,
+        vinculo: data.vinculo,
+        ra: data.ra || null,
+        siape: data.siape || null,
+        instituicao: data.instituicao || null,
+      };
+
+      if (user.primeiro_acesso) {
+        if (!data.senha) {
+          throw new BadRequestException('A senha é obrigatória para configurar o primeiro acesso.');
+        }
+        updateData.senha = await bcrypt.hash(data.senha, 10);
+        updateData.primeiro_acesso = false;
+      } else {
+        // Usuário existente - Exige senhaAtual
+        if (!data.senhaAtual) {
+          throw new UnauthorizedException('Senha atual é obrigatória para confirmar a atualização de dados.');
+        }
+        const senhaValida = await bcrypt.compare(data.senhaAtual, user.senha);
+        if (!senhaValida) {
+          throw new UnauthorizedException('Senha atual incorreta.');
+        }
       }
 
       // Atualiza os dados
       // @ts-ignore
       user = await this.prisma.usuario.update({
         where: { id_usuario: user.id_usuario },
-        data: {
-          nome: data.nome,
-          email: data.email,
-          vinculo: data.vinculo,
-          ra: data.ra || null,
-          siape: data.siape || null,
-          instituicao: data.instituicao || null,
-        },
+        data: updateData,
         include: { participante: true }
       });
     } else {
