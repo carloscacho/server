@@ -10,12 +10,16 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async validateUser(email: string, senha: string) {
-    const user = await this.usuarioService.findByEmail(email, true);
+  async validateUser(identifier: string, senha: string) {
+    try {
+      const user = await this.usuarioService.findByIdentifier(identifier, true);
 
-    if (user && (await bcrypt.compare(senha, user.senha))) {
-      const { senha, ...result } = user;
-      return result;
+      if (user && (await bcrypt.compare(senha, user.senha))) {
+        const { senha, ...result } = user;
+        return result;
+      }
+    } catch (e) {
+      // Ignorar o NotFoundException do findByIdentifier para retornar credenciais inválidas genérico
     }
 
     throw new UnauthorizedException('Credenciais inválidas');
