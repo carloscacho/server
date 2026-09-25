@@ -18,6 +18,7 @@ import { TurnoModule } from './turno/turno.module';
 import { AuthModule } from './auth/auth.module';
 import { InscricaoModule } from './inscricao/inscricao.module';
 import { MailModule } from './mail/mail.module';
+import { RecursoAtividadeModule } from './recurso-atividade/recurso-atividade.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     InscricaoModule,
     MailModule,
+    RecursoAtividadeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

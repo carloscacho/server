@@ -24,6 +24,7 @@ model atividade {
   atividades_filhas      atividade[]             @relation("AtividadeVinculada")
   data_atividade         data_atividade[]
   palestrante_atividade  palestrante_atividade[]
+  recurso_atividade      recurso_atividade[]
 
   @@index([fk_evento], map: "fk_atividade_evento1_idx")
   @@index([fk_sala], map: "fk_atividade_sala1_idx")
@@ -199,4 +200,16 @@ model participante_turma {
   @@id([fk_participante, fk_turma])
   @@index([fk_participante])
   @@index([fk_turma])
+}
+
+model recurso_atividade {
+  id_recurso   Int       @id @default(autoincrement()) @db.UnsignedMediumInt
+  nome         String    @db.VarChar(100)
+  tipo_envio   String    @db.VarChar(20)
+  formato      String?   @db.VarChar(20)
+  url_arquivo  String    @db.VarChar(255)
+  fk_atividade Int       @db.UnsignedMediumInt
+  atividade    atividade @relation(fields: [fk_atividade], references: [id_atividade], onDelete: Cascade, onUpdate: NoAction, map: "fk_recurso_atividade")
+
+  @@index([fk_atividade], map: "fk_recurso_atividade_idx")
 }
